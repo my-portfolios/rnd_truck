@@ -1,0 +1,135 @@
+<script>
+  $(function () {
+
+    // form input auto submit 막기
+    $(document).keypress(function(e) {
+      if(e.keyCode != 13) { return; }
+
+      e.preventDefault();
+    });
+
+    // 댓글 삭제 기능
+    $('[name=btn_deleteReply], [name=btn_deleteReplyComent]').click(function(e) {
+      if(!confirm('삭제 하시겠습니까?')) { return; }
+
+      var replyKey = $(this).attr('reply_key');
+
+      $('#deleteReplyForm').attr('action', '/board/reply/delete/' + replyKey + '?_method=delete').submit();
+    });
+
+    // 댓글 등록 기능
+    $('[name=btn_insertReplyComent]').click(function(e) {
+      if($(this).parent().find('[name=REPLY_CONTENT]').val() == '') {
+        alert('댓글을 입력해 주세요.');
+        return;
+      }
+
+      var replyKey = $(this).attr('reply_key');
+      $('#insertReReplyForm_' + replyKey).submit();
+    });
+  })
+</script>
+
+<h3 class="reply_title">댓글 목록 <font size="2">(댓글수 : <%- replyInfos.length%>)</font></h3>
+
+<%# 덧글 내용이 없을때 표현 %>
+<% if(replyInfos.length == 0) { %>
+<div class="reply" style="text-align: center;margin-bottom: 20px;padding: 20px;">
+  등록된 댓글이 없습니다.
+</div>
+<% } %>
+
+<% replyInfos.forEach(function(element) { %>
+
+<div class="reply">
+  <ul>
+    <li>
+      <div class="reply_name"><%- element.USER_NICK%> (<%- element.CREATE_DT%>) </div>     
+      <div class="reply_content"><%- element.REPLY_CONTENT%> 
+        <% if(token != undefined && (token.userId == element.CREATE_ID)) { %>
+          <!-- 글 삭제 -->
+          <form id="deleteReplyForm" action="/board/reply/delete/<%- element.REPLY_KEY%>?_method=delete" method="POST" style="text-align: left; display: inline-block;">
+            <input type="hidden" name="BOARD_KEY" value="<%- noticeInfo.BOARD_KEY%>">
+            <input type="hidden" name="BOARD_TYPE" value="<%- noticeInfo.BOARD_TYPE%>">
+            <button type="button" name="btn_deleteReply" class="btn btn-danger btn-xs" reply_key="<%- element.REPLY_KEY%>">전체 삭제</button>
+          </form>
+          <!-- 글 삭제 -->
+        <% } %>
+      </div>
+
+    <!-- 대댓글 목록 -->    
+    <% if(element.reReplyCount > 0) { %> 
+      <div class="area_reply">
+      <% element.reReplyList.forEach(function(reply) { %> 
+        <div class="area_reply_cnt">
+          <%- reply.USER_NICK%> (<%- reply.CREATE_DT%>) 
+          <strong><%- reply.REPLY_CONTENT %></strong>
+         <% if(token != undefined && token.userId == reply.CREATE_ID) { %>
+            <button type="button" name="btn_deleteReplyComent" class="btn btn-danger btn-xs" reply_key="<%- reply.REPLY_KEY%>">댓글 삭제</button>
+          <% } %>
+          </div>
+      <% }) %> 
+    </div>       
+    <% } %>     
+    <!-- 대댓글 목록 -->
+
+    <!-- 대댓글 등록 -->
+    <% if(token != undefined) { %> 
+      <form id="insertReReplyForm_<%- element.REPLY_KEY%>" action="/board/reply/comment/insert" method="POST">
+        <input type="hidden" name="BOARD_KEY" value="<%- noticeInfo.BOARD_KEY%>">
+        <input type="hidden" name="BOARD_TYPE" value="<%- noticeInfo.BOARD_TYPE%>">
+        <input type="hidden" name="PARENT_REPLY_KEY" value="<%- element.REPLY_KEY%>">
+        <input type="text" name="REPLY_CONTENT" style="width: 92%;">
+        <button type="button" name="btn_insertReplyComent" class="btn btn-primary" reply_key="<%- element.REPLY_KEY%>">댓글 등록</button>
+      </form>
+    <% } %>
+    <!-- 대댓글 등록 -->
+	  
+    
+    </li>
+  </ul>
+</div>
+<% }); %>
+
+
+<%# 로그인 상태가 아니라면 댓글 입력 기능을 보여 주지 않는다. %>
+<% if(token != undefined) { %>
+
+<script>
+  $(function () {
+    $('#btn_insertReply').click(function (e) {
+      if($('#area_reply').val().length < 1) {
+        alert('댓글을 입력해 주세요.');
+        $('#area_reply').focus();
+        return;
+      }
+      $('#replyForm').submit();
+    });
+  });
+</script>
+
+<form id="replyForm" action="/board/reply/insert" method="POST">
+<input type="hidden" name="BOARD_KEY" value="<%- noticeInfo.BOARD_KEY%>">
+<input type="hidden" name="BOARD_TYPE" value="<%- noticeInfo.BOARD_TYPE%>">
+
+<table summary="댓글 입력">
+  <caption>댓글 입력</caption>
+  <colgroup> 
+    <col style="width: 10%;">
+    <col style="width: 90%;">
+  </colgroup>
+  <tbody>
+    <tr>
+      <th>댓글 입력</th>
+      <td class="left">
+        <textarea id="area_reply" name="REPLY_CONTENT" style="width: 100%; min-height: 100px;"></textarea>
+        <button type="button" id="btn_insertReply" class="btn btn-primary">댓글 등록</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</form>
+</div>
+
+<% } %>

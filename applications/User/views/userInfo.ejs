@@ -1,0 +1,107 @@
+<style>
+    .errors {
+      color: red;
+      background-color: #acf;
+   }
+</style>
+
+<script>
+
+    let params = '<%- params[0]%>';
+
+    $(function(){
+
+        $("#updateForm").validate({
+            submitHandler: function(form) {
+                
+                let message = '회원 정보를 수정 하겠습니까?';
+
+                if($('#updateForm').attr('action').lastIndexOf('releaseUser') > -1) {
+                    message = '본 사이트의 가입을 해제 하시겠습니까?';
+                }
+
+                if(confirm(message)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            errorClass: 'errors',
+            rules: {
+                password: {
+                    minlength : 8
+                },
+                repassword: {
+                    minlength : 8,
+                    equalTo : "[name='password']"
+                },
+                userNm: {
+                    required : true
+                },
+                userTelNumber: {
+                    required: true
+                },
+                userNick: {
+                    required: true
+                },
+                userMail: {
+                    required: true,
+                    email: true
+                }
+
+            },
+            messages : {
+                userNm: {
+                    required : "이름을 입력하세요",
+                },
+                userTelNumber: {
+                    required: '전화번호를 입력하세요'
+                },
+                userNick: {
+                    required: "별명을 입력하세요"
+                },
+                userMail: {
+                    required: "메일을 입력하세요",
+                    email: "메일 형식이 아닙니다"
+                }
+            }
+        });
+
+        $("#findAddress").click(function() {
+            FormUtility.getAddressFromDaumPostcode(this, function(data) {
+                $("[name='userAdres']").val(data.address);
+            });
+        });
+
+        $('[name=userTelNumber]').keyup(function() {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+
+        $('#btn_releaseUser').click(function() {
+                
+            $('#updateForm').attr('action', '/user/releaseUser');
+            $('#updateForm').submit();
+        });
+    });
+</script>
+
+<form id="updateForm" action="/user/updateUserInfo" method="post" class="join_form form-signin">
+
+<div class="row">
+    <input type="hidden" name="userKey" value="<%- params[0].USER_KEY%>">
+    <input type="text" name="userId" placeholder="아이디 입력 (4~20자 이내 영문 소문자, 숫자만 가능합니다.)" class="form-control" readonly value="<%- params[0].USER_ID%>"/>
+    <input type="password" name="password" placeholder="비밀번호 (최소 8글자이상이어야 합니다)" class="form-control"/>
+    <input type="password" name="repassword" placeholder="비밀번호 확인" class="form-control"/>
+    <input type="text" name="userNm" placeholder="이름" class="form-control" value="<%- params[0].USER_NM%>"/>
+    <input type="text" name="userNick" placeholder="별명" class="form-control" value="<%- params[0].USER_NICK%>"/>
+    <input type="text" name="userTelNumber" maxlength="11" placeholder="전화번호('-' 제외)" class="form-control" value="<%- params[0].USER_TEL_NUMBER%>"/>
+    <input type="text" name="userMail" placeholder="메일" class="form-control" value="<%- params[0].USER_MAIL%>"/>
+    <input type="text" name="userAdres" placeholder="주소" readonly="readonly" class="form-control" style="display: inline-block;width: 70%;" value="<%- params[0].USER_ADRES%>"/> 
+    <button type="button" id="findAddress" class="btn btn-primary">검색</button>
+    <input type="text" name="userDetailAdres" placeholder="상세 주소" class="form-control" value="<%- params[0].USER_DETAIL_ADRES%>"/>
+    <p class="text-center">
+        <button type="submit" class="btn btn-primary">수정</button>
+        <button type="button" id="btn_releaseUser" class="btn btn-primary">회원탈퇴</button>
+    </p>
+</div>
+</form>

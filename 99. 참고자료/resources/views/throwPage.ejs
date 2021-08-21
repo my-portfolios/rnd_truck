@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>캠핑카 포털</title>
+		<script language="javascript">
+			Document.prototype.ready = function(callback) {
+				if(callback && typeof callback === 'function') {
+					document.addEventListener("DOMContentLoaded", function() {
+						if(document.readyState === "interactive" || document.readyState === "complete") {
+							return callback();
+						}
+					});
+				}
+			};
+
+			document.ready(function() {
+				<% if(message != null && message != '') { %>
+					alert('<%= message %>');
+				<% } %>
+
+				<% if(url != null && url != '') { %>
+					<% if(url == '-1') { %>
+						window.close();
+					<% } else if(target != null && target != '') { %>
+						window.open('<%= url %>','<%= target %>');
+					<% } else { %>
+						var method = '<%= method %>';
+						if(method.toUpperCase() == 'GET') { location.href = '<%= url %>'; }
+						else {
+							moveForm.method = method;
+							moveForm.submit();	
+						}
+					<% } %>
+				<% } else { %>
+					history.back();
+				<% } %>
+			});
+		</script>
+	</head>
+	<form id="moveForm" action='<%= url %>' method='<%= method %>'></form>
+</html>

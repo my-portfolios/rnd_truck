@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Reply">  
+
+  <delete id="deleteReply">
+    DELETE FROM 
+      BOARD_REPLY 
+    WHERE 
+      REPLY_KEY = #{REPLY_KEY}
+      OR
+      PARENT_REPLY_KEY = #{REPLY_KEY}
+  </delete>
+
+  <insert id="insertReply">
+    INSERT INTO BOARD_REPLY 
+      (BOARD_KEY, REPLY_CONTENT, CREATE_ID)
+    VALUES
+      (#{BOARD_KEY}, #{REPLY_CONTENT}, #{token.userId})
+  </insert>
+
+  <select id="selectReplyInfos">
+    WITH USERINFO AS (
+      SELECT 
+        T1.USER_ID, 
+        T2.USER_NICK 
+      FROM 
+        USER T1
+        LEFT JOIN 
+        USER_INFO T2
+        ON T1.USER_KEY = T2.USER_KEY
+    )
+    SELECT 
+      T1.REPLY_KEY, 
+      T1.BOARD_KEY, 
+      T1.REPLY_CONTENT, 
+      T1.PARENT_REPLY_KEY,
+      T1.PARENT_REPLY_SORT,
+      T1.CREATE_ID, 
+      DATE_FORMAT(T1.CREATE_DT, '%Y-%m-%d') AS CREATE_DT,
+      T2.USER_NICK
+    FROM 
+      BOARD_REPLY T1
+      LEFT JOIN 
+      USERINFO T2 
+      ON T1.CREATE_ID = T2.USER_ID 
+    WHERE
+      PARENT_REPLY_KEY = 0
+      <if test="BOARD_KEY != null and BOARD_KEY != ''">
+      AND BOARD_KEY = #{BOARD_KEY} 
+      </if>
+    ORDER BY
+      CREATE_DT ASC
+  </select>
+
+  <select id="selectReReplyList">
+    SELECT
+      REPLY_KEY, 
+      BOARD_KEY, 
+      PARENT_REPLY_KEY, 
+      PARENT_REPLY_SORT,
+      REPLY_CONTENT,
+      CREATE_ID, 
+      CASE 
+        WHEN ( SELECT USER_TYPE FROM USER WHERE USER_ID = T1.CREATE_ID ) = 'C' 
+        THEN ( SELECT ENTPR_NM FROM ENTPR_INFO WHERE USER_KEY = ( SELECT USER_KEY FROM USER WHERE USER_ID = T1.CREATE_ID ) )
+        ELSE ( SELECT USER_NICK FROM USER_INFO WHERE USER_KEY = ( SELECT USER_KEY FROM USER WHERE USER_ID = T1.CREATE_ID ) )
+      END AS USER_NICK,
+      DATE_FORMAT( CREATE_DT, '%Y-%m-%d') AS CREATE_DT
+    FROM
+      BOARD_REPLY T1
+    WHERE
+      PARENT_REPLY_KEY = #{REPLY_KEY}
+      AND BOARD_KEY = #{BOARD_KEY}
+    ORDER BY
+      PARENT_REPLY_SORT
+  </select>
+
+  <insert id="insertReplyComment">
+    INSERT INTO BOARD_REPLY 
+      (BOARD_KEY, PARENT_REPLY_KEY, 
+        PARENT_REPLY_SORT, 
+      REPLY_CONTENT, CREATE_ID)
+    VALUES
+      (#{BOARD_KEY}, #{PARENT_REPLY_KEY}, 
+        (SELECT IF(T1.PARENT_REPLY_SORT IS NULL, 0, MAX(T1.PARENT_REPLY_SORT) + 1) FROM BOARD_REPLY T1 WHERE T1.BOARD_KEY = #{BOARD_KEY} AND T1.PARENT_REPLY_KEY = #{PARENT_REPLY_KEY}),
+      #{REPLY_CONTENT}, #{token.userId})
+  </insert>
+
+</mapper>

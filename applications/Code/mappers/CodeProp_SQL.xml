@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CodeProp">  
+
+  <select id="getPropList">
+    SELECT
+      PROP_INFO_KEY,
+      CODE_KEY,
+      PROP_ORDER,
+      PROP_NAME,
+      DATA_TYPE,
+      DATA_MIN_LENGTH,
+      DATA_MAX_LENGTH,
+      DATA_REQUIRED,
+      DATA_REGEX,
+      DATA_REGEX_TAG,
+      DATA_REF_OBJ,
+      DATA_REF_VAL,
+      DATA_INFO_MESSAGE,
+      USE_YN,
+      CREATE_ID,
+      UPDATE_ID,
+      CREATE_DT,
+      UPDATE_DT
+    FROM 
+      PROP_INFO
+    WHERE 1=1
+      <if test="propInfoKey != null and propInfoKey != ''">
+        AND PROP_INFO_KEY = #{propInfoKey}
+      </if>
+      <if test="codeKey != null and codeKey != ''">
+        AND CODE_KEY = #{codeKey}
+      </if>
+  ORDER BY PROP_ORDER ASC
+  </select>
+
+  <insert id="insertPropList">
+    INSERT INTO PROP_INFO (
+      CODE_KEY,
+      PROP_ORDER,
+      PROP_NAME,
+      DATA_TYPE,
+      DATA_REQUIRED,
+      DATA_REGEX,
+      DATA_REGEX_TAG,
+      DATA_REF_OBJ,
+      DATA_REF_VAL,
+      DATA_INFO_MESSAGE,
+      USE_YN,
+      CREATE_ID,
+      UPDATE_ID
+    ) VALUES
+		  <foreach collection="insertList" item="item" separator=",">(
+          #{item.codeKey}, 
+          #{item.propOrder}, 
+          #{item.propName}, 
+          #{item.dataType},  
+          #{item.dataRequired}, 
+          #{item.dataRegex}, 
+          #{item.dataRegexTag},
+          #{item.dataRefObj}, 
+          #{item.dataRefVal}, 
+          #{item.dataInfoMessage},
+          #{item.useYn},
+          #{item.createId}, 
+          #{item.updateId}
+      )</foreach>
+  </insert>
+
+  <update id="updatePropList">
+    UPDATE 
+			PROP_INFO
+		SET
+      <if test="codeKey != null and codeKey != ''">
+			CODE_KEY = #{codeKey},
+      </if>
+      <if test="propOrder != null and propOrder != ''">
+      PROP_ORDER = #{propOrder},
+      </if>
+      <if test="propName != null and propName != ''">
+      PROP_NAME = #{propName},
+      </if>
+      <if test="dataType != null and dataType != ''">
+      DATA_TYPE = #{dataType},
+      </if>
+      <if test="dataMinLength != null and dataMinLength != ''">
+      DATA_MIN_LENGTH = #{dataMinLength},
+      </if>
+      <if test="dataMaxLength != null and dataMaxLength != ''">
+      DATA_MAX_LENGTH = #{dataMaxLength},
+      </if>
+      <if test="dataRequired != null and dataRequired != ''">
+      DATA_REQUIRED = #{dataRequired},
+      </if>
+      DATA_REGEX = #{dataRegex},
+      DATA_REGEX_TAG = #{dataRegexTag},
+      DATA_REF_OBJ = #{dataRefObj},
+      DATA_REF_VAL = #{dataRefVal},
+      DATA_INFO_MESSAGE = #{dataInfoMessage},
+      <if test="useYn != null and useYn != ''">
+      USE_YN = #{useYn},
+      </if>
+      UPDATE_ID = #{updateId}
+		WHERE 1=1
+			AND PROP_INFO_KEY = #{propInfoKey}
+  </update>
+
+  <delete id="deletePropList">
+    DELETE FROM 
+			PROP_INFO
+		WHERE 1=1
+      <if test="propInfoKey != null and propInfoKey != ''">
+			  AND PROP_INFO_KEY = #{propInfoKey}
+      </if>
+      <if test="codeKey != null and codeKey != ''">
+			  AND CODE_KEY = #{codeKey}
+      </if>
+  </delete>
+</mapper>

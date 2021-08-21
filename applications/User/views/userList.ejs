@@ -1,0 +1,408 @@
+<script defer>
+  $(function() {
+
+    function CustomTelNumberFormatter(props) {
+        var num = String(props.value);
+
+        if(num.length == 11) {
+          num = String(num.substr(0, 3) + '-' + num.substr(3, 4) + '-' + num.substr(7, 4));
+        } else {
+          num = String(num.substr(0, 3) + '-' + num.substr(3, 3) + '-' + num.substr(6, 4));
+        }
+
+        return num;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // 사용자 및 관리자 화면 작업
+    let dgMain = new tui.Grid({
+        el: $('#dgMain')[0],
+        data: {
+          initialRequest: true,
+          contentType: 'application/json',
+          api: {
+            readData: { url: '/user/selectUserList', method: 'POST', initParams: { searchType: $('#sel_searchType').val(), searchText: $('#txt_searchText').val() } },
+            updateData: { url: '/user/updateUser', method: 'PUT' },
+            deleteData: { url: '/user/deleteUser', method: 'PUT' }
+          }
+        },
+		    scrollX: true,
+		    scrollY: true,
+        bodyHeight: 500,
+        pageOptions: {
+          useClient: true,
+          perPage: 10
+        },
+		    rowHeaders: ['checkbox', 'rowNum'],
+		    columns: [
+          {
+            name: 'USER_KEY',
+            hidden: true
+          }, {
+            header: '회원구분',
+            width: 100,
+            name: 'USER_TYPE',
+            align: 'center',
+            sortable: true, 
+            formatter: 'listItemText',
+            editor: {
+              type: 'select',
+              options: {
+                listItems: [
+                  { text: '일반사용자', value: 'U' },
+                  { text: '관리자', value: 'A' }
+                ]
+              }
+            }
+          }, {
+            header: '사용여부',
+            width: 80,
+            name: 'USE_YN',
+            align: 'center',
+            sortable: true,
+            formatter: 'listItemText',
+            editor: {
+              type: 'select',
+              options: {
+                listItems: [
+                  { text: '승인', value: 'Y' },
+                  { text: '미승인', value: 'N' }
+                ]
+              }
+            }
+          }, {
+            header: '아이디',
+            name: 'USER_ID',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }, {
+            header: '이름',
+            name: 'USER_NM',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '닉네임',
+            name: 'USER_NICK',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '전화번호',
+            name: 'USER_TEL_NUMBER',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            formatter: CustomTelNumberFormatter,
+            editor: 'text'
+          }, {
+            header: '이메일',
+            name: 'USER_MAIL',
+            align: 'left',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '최초가입일',
+            name: 'CREATE_DT',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }, {
+            header: '최종접속일',
+            name: 'UPDATE_DT',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }
+			]
+    });
+
+    dgMain.on('failResponse', function (event) {
+      alertify.alert('오류', JSON.parse(event.xhr.responseText).message);
+    });
+    
+
+    function selectGrid() {
+      dgMain.readData(1, { searchType: $('#sel_searchType').val(), searchText: $('#txt_searchText').val() }, true);
+    }
+
+    $('#btn_search').click(function () {
+      selectGrid();
+    });
+
+    $('#txt_searchText').on('keypress', function (event) {
+      if(event.keyCode != '13') { return; }
+      selectGrid();
+    });
+
+    $('#btn_save').click(function () {
+      dgMain.request('updateData');
+    });
+
+    $('#btn_delete').click(function () {
+
+      dgMain.getCheckedRowKeys().forEach(function (element) {
+        dgMain.removeRow(element, {});
+      });
+
+      dgMain.request('deleteData');
+    });
+
+    $('#txt_searchText').on('keypress', function (e) {
+      if(e.keyCode != 13) { return; }
+
+      selectGrid2();
+    });
+  
+
+    // 사용자 및 관리자 화면 작업 끝
+    ////////////////////////////////////////////////////////////////////////////////
+    
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // 시공사 화면
+    let dgMain2 = new tui.Grid({
+        el: $('#dgMain2')[0],
+        data: {
+          initialRequest: true,
+          contentType: 'application/json',
+          api: {
+            readData: { url: '/user/selectEntprList', method: 'POST', initParams: { searchType: $('#sel_searchType2').val(), searchText: $('#txt_searchText2').val() } },
+            updateData: { url: '/user/updateEntpr', method: 'PUT' },
+            deleteData: { url: '/user/deleteEntpr', method: 'PUT' }
+          }
+        },
+		    scrollX: true,
+		    scrollY: true,
+        bodyHeight: 500,
+        pageOptions: {
+          useClient: true,
+          perPage: 10
+        },
+		    rowHeaders: ['checkbox', 'rowNum'],
+		    columns: [
+          {
+            name: 'USER_KEY',
+            hidden: true
+          }, {
+            header: '회원구분',
+            width: 100,
+            name: 'USER_TYPE',
+            align: 'center',
+            sortable: true, 
+            formatter: 'listItemText',
+            editor: {
+              type: 'select',
+              options: {
+                listItems: [
+                  { text: '시공사', value: 'C' }
+                ]
+              }
+            }
+          }, {
+            header: '사용여부',
+            width: 80,
+            name: 'USE_YN',
+            align: 'center',
+            sortable: true,
+            formatter: 'listItemText',
+            editor: {
+              type: 'select',
+              options: {
+                listItems: [
+                  { text: '승인', value: 'Y' },
+                  { text: '미승인', value: 'N' }
+                ]
+              }
+            }
+          }, {
+            header: '아이디',
+            name: 'USER_ID',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }, {
+            header: '이름',
+            name: 'ENTPR_NM',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '전화번호',
+            name: 'ENTPR_TEL_NUMBER',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            formatter: CustomTelNumberFormatter,
+            editor: 'text'
+          }, {
+            header: '담당자명',
+            name: 'MANAGER_NM', 
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '담당자연락처',
+            name: 'MANAGER_TEL_NUMBER',
+            align: 'center',
+            resizable: true,
+            sortable: true,
+            formatter: CustomTelNumberFormatter,
+            editor: 'text'
+          }, {
+            header: '담당자이메일',
+            name: 'MANAGER_EMAIL',
+            align: 'left',
+            resizable: true,
+            sortable: true,
+            editor: 'text'
+          }, {
+            header: '최초가입일',
+            name: 'CREATE_DT',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }, {
+            header: '최종접속일',
+            name: 'UPDATE_DT',
+            align: 'center',
+            resizable: true,
+            sortable: true
+          }
+			]
+    });
+
+    dgMain2.on('failResponse', function (event) {
+      alertify.alert('오류', JSON.parse(event.xhr.responseText).message);
+    });
+    
+
+    function selectGrid2() {
+      dgMain2.readData(1, { searchType: $('#sel_searchType2').val(), searchText: $('#txt_searchText2').val() }, true);
+    }
+
+    $('#btn_search2').click(function () {
+      selectGrid2();
+    });
+
+    $('#btn_save2').click(function () {
+      dgMain2.request('updateData');
+    });
+
+    $('#btn_delete2').click(function () {
+
+      dgMain2.getCheckedRowKeys().forEach(function (element) {
+        dgMain2.removeRow(element, {});
+      });
+
+      dgMain2.request('deleteData');
+    });
+
+    $('#txt_searchText2').on('keypress', function (e) {
+      if(e.keyCode != 13) { return; }
+
+      selectGrid2();
+    });
+
+    // 시공사 화면 끝
+    ////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // 공통 영역
+    
+    // 탭이 선택 되어 해당 내용이 완전히 load가 되어 지면 grid 및 검색을 다시 수행 함.
+    $('#userTab a').on('shown.bs.tab', function (e) {
+      if($(e.target).attr('href') == '#user') {
+        dgMain.refreshLayout();
+        selectGrid();
+      } else {
+        dgMain2.refreshLayout();
+        selectGrid2();
+      }
+    });
+  });
+</script>
+
+
+<div role="tabpanel">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist" id="userTab">
+    <li role="presentation" class="active" style="width:50% !important;"><a href="#user" aria-controls="home" role="tab" data-toggle="tab">사용자 및 관리자</a></li>
+    <li role="presentation" style="width:50% !important;"><a href="#entpr" aria-controls="profile" role="tab" data-toggle="tab">시공사</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="user">
+      <!-- 사용자 및 관리자 Tab panes -->
+      
+      <!--검색영역-->
+      <div class="row">
+        <div class="col-md-4 col-xs-12 text-left">
+          <div class="btn-group" role="group" aria-label="...">
+            <button type="button" id="btn_save" class="btn btn-danger">저장</button>
+            <button type="button" id="btn_delete" class="btn btn-danger">선택삭제</button>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-md-offset-2 col-xs-12 div-right">
+          <div class="input-group">
+            <select name="searchType" name="sel_searchType" id="sel_searchType">
+              <option value="N">이름</option>
+              <option value="T">전화번호</option>
+            </select>
+            
+            <span class="input-group-btn">
+              <input type="text" id="txt_searchText" name="txt_searchText" class="form-control" placeholder="검색어 입력" aria-label="Recipient's username" aria-describedby="basic-addon2">
+              <button type="button" id="btn_search" class="btn btn-primary">검색</button>            
+            </span>          
+          </div>
+        </div>
+      </div>
+      <!--검색영역-->
+
+      <div id="dgMain"></div>
+      <!-- 사용자 및 관리자 Tab panes -->
+    </div>
+    <div role="tabpanel" class="tab-pane" id="entpr">
+      
+      <!-- 시공사 Tab panes -->
+      <!--검색영역-->
+      <div class="row">
+        <div class="col-md-4 col-xs-12 text-left">
+          <div class="btn-group" role="group" aria-label="...">
+            <button type="button" id="btn_save2" class="btn btn-danger">저장</button>
+            <button type="button" id="btn_delete2" class="btn btn-danger">선택삭제</button>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-md-offset-2 col-xs-12 div-right">
+          <div class="input-group">
+            <select name="searchType" id="sel_searchType2">
+              <option value="N">업체명</option>
+              <option value="T">전화번호</option>
+            </select>
+            
+            <span class="input-group-btn">
+              <input type="text" id="txt_searchText2" name="searchText" class="form-control" placeholder="검색어 입력" aria-label="Recipient's username" aria-describedby="basic-addon2">
+              <button type="button" id="btn_search2" class="btn btn-primary">검색</button>
+            </span>        
+          </div>
+        </div>
+      </div>
+      <!--검색영역-->
+
+      <div id="dgMain2"></div>
+      <!-- 시공사 Tab panes -->
+    </div>
+  </div>
+
+</div>

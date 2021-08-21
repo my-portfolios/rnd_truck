@@ -1,0 +1,158 @@
+<style>
+  .wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 132px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;line-height: 1.5;}
+  .wrap * {padding: 0;margin: 0;}
+  .wrap .info {width: 286px;height: 120px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;}
+  .wrap .info:nth-child(1) {border: 0;box-shadow: 0px 1px 2px #888;}
+  .info .title {padding: 5px 0 0 10px;height: 30px;background: #2a8bd1;border-bottom: 1px solid #ddd;font-size: 15px;font-weight: bold; color: #ffffff;}
+  .info .close {position: absolute;top: 6px;right: 10px;color: #888;width: 17px;height: 17px;background: url('/assets/images/overlay_close.png');}
+  .info .close:hover {cursor: pointer;}
+  .info .body {position: relative;overflow: hidden;}
+  .info .desc {position: relative;margin: 13px 0 0 90px;height: 75px;}
+  .desc .ellipsis {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+  .desc .jibun {font-size: 11px;color: #888;margin-top: -2px;}
+  .desc .tel {font-size: 11px;color: rgb(58, 8, 238);margin-top: -2px;}
+  .info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
+  .info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('/assets/images/vertex_white.png')}
+  .info .link {color: #5085BB;}
+</style>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=aea984be053b10b4f069b596ca142fa5&libraries=services,clusterer"></script>
+<script>
+
+  $(function() {
+
+    var container = $('#map')[0]; //지도를 담을 영역의 DOM 레퍼런스
+    var options = { //지도를 생성할 때 필요한 기본 옵션
+      center: new kakao.maps.LatLng(36.2683, 127.6358), //지도의 중심좌표.
+      level: 13 //지도의 레벨(확대, 축소 정도)
+    };
+
+    var map = new kakao.maps.Map(container, options);  //지도 생성 및 객체 리턴
+
+    // 마커 클러스터러를 생성합니다 
+    var clusterer = new kakao.maps.MarkerClusterer({
+      map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+      averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+      minLevel: 10 // 클러스터 할 최소 지도 레벨 
+    });
+
+    var places = new kakao.maps.services.Places();
+
+    var viewOverlay = null;
+    function getMarker(item) {
+
+      var marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(item.mapY, item.mapX),
+        clickable: true
+      });
+
+      // 커스텀 오버레이에 표시할 컨텐츠 입니다
+      // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
+      // 별도의 이벤트 메소드를 제공하지 않습니다 
+      var content = '<div class="wrap">' + 
+                  '    <div class="info">' + 
+                  '        <div class="title">' + 
+                  '            ' + item.facltNm + 
+                  '            <div class="close" title="닫기"></div>' + 
+                  '        </div>' + 
+                  '        <div class="body">' + 
+                  '            <div class="img">' +
+                  '                <img src="' + ((item.firstImageUrl == undefined)? '' : item.firstImageUrl) + '" width="73" height="70">' +
+                  '           </div>' + 
+                  '            <div class="desc">' + 
+                  '                <div class="ellipsis">' + item.addr1 + '</div>' + 
+                  '                <div class="jibun ellipsis">' + ((item.addr2 == undefined)? '상세주소없음' : item.addr2) + ' (우)' + item.zipcode + '</div>' + 
+                  '                <div class="tel">' + ((item.tel == undefined)? '전화번호없음' : item.tel) + '</div>' + 
+                  '                <div><a href="' + item.homepage + '" target="_blank" class="link">캠핑장 홈페이지</a></div>' + 
+                  '            </div>' + 
+                  '        </div>' + 
+                  '    </div>' +    
+                  '</div>';
+
+      // 마커 위에 커스텀오버레이를 표시합니다
+      // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+      var overlay = new kakao.maps.CustomOverlay({
+          content: content,
+          map: map,
+          position: marker.getPosition()       
+      });
+
+      // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+      kakao.maps.event.addListener(marker, 'click', function() {
+
+        // 기존 열려져 있는 overlay를 닫는다.
+        if(viewOverlay != null) { viewOverlay.setMap(null); }
+
+        viewOverlay = overlay;
+        overlay.setMap(map);
+      });
+
+      $('.close').click(function() {
+        overlay.setMap(null);
+      });
+
+      overlay.setMap(null);
+
+      return marker;
+    }
+
+    $('#searchAction').click(function() {
+      
+      $.post('/campsite/search/' + $('#searchValue').val(), {}, function(result) {
+
+        clusterer.clear();
+
+        var markers = $(result.campsiteList.item).map(function(i, item) {
+            return getMarker(item);
+        });
+
+        clusterer.addMarkers(markers);
+
+        clusterer.redraw();
+
+      });
+
+    });
+
+    $('#searchValue').val('오토캠핑장');
+    $('#searchAction').trigger('click');
+  });
+</script>
+
+<!--검색영역-->
+<div class="row">
+
+	<div class="col-md-6 col-md-offset-4 col-xs-12">
+
+		<form id="frm" action="/data" method="POST">
+			<div class="input-group">
+				<script>
+					$(function () {
+						let searchType = '<%- params.SEARCH_TYPE%>';
+						if(searchType == '') {
+							$('#searchType option:eq(0)').attr('selected', true);
+						} else {
+							$('#searchType').val(searchType);
+						}
+						
+					})
+				</script>
+				
+				<span class="input-group-btn">
+					<input type="text" id="searchValue" name="SEARCH_VALUE" class="form-control" placeholder="캠핑장 이름" value="<%- params.SEARCH_VALUE%>">
+					<button type="button" id="searchAction" class="btn btn-primary">검색</button>
+				</span>
+			</div>
+		</form>
+
+	</div>
+</div>
+<!--검색영역-->
+
+<!-- list -->
+<div class="row">
+    
+    <div id="map" class="campsite_box"></div>
+    
+</div>
+<!-- list -->

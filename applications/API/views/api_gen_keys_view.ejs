@@ -1,0 +1,26 @@
+
+<div class="cnt_box">
+    <p class="content_title">안내</p>
+    <ul>
+        <li>생성된 API 키는 아래와 같습니다.</li>
+        <li>API 키를 분실하셨을 때 개인키를 이용하여 재발급 받으실 수 있습니다.</li>
+        <li>API키와 개인키 모두 분실하시면 기존 키를 삭제 후 다시 발급받으시기 바랍니다.</li>
+    </ul>
+</div>
+
+<div class="board_list"> 
+    <table>
+        <tr>
+            <th>API 키</th>
+            <td><%- apiKey %></td>
+        </tr>
+        <tr>
+            <th>개인키</th>
+            <td><input type="button" onclick='$("#pemKeyDownload").submit();' value="개인키 다운로드" /></td>
+        </tr>
+    </table>
+</div>
+
+<form id="pemKeyDownload" action='/openapi/pemKeyDownload' method="post" style="display:none;">
+	<textarea name="keyValue"><%- privateKey %></textarea>
+</form>

@@ -1,0 +1,147 @@
+<script type="text/javascript" src="/assets/js/utility/Common.js"></script>
+
+<!-- 전체검색 -->
+<form id="searchForm" action="/search/result/:keyword" method="POST">
+  <div class="sub-search main-section-search">
+    <div class="input-box">
+      <input type="search" id="keyword" name="keyword" title="검색어를 입력해 주세요" onkeyup="fn_searchKeyup(this);"
+        placeholder="어떤 데이터를 찾으시나요?" autocomplete="off" class="input-text" value="<%- keyword%>">
+      <button type="button" class="btn-search" onclick="fn_search();">
+        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- 전체검색 -->
+
+
+
+<!-- 게시판 검색 결과 -->
+<div class="row">
+  <div class="col-lg-6">
+    <div class="main_box">
+      <ul>
+        <li class="title_line">
+          <span class="div-left">
+            <h4>공지사항</h4>
+          </span>
+          <span class="plus_icon"><a href="/board/notice"><span class="glyphicon glyphicon-plus"
+                aria-hidden="true"></span></a></span>
+        </li>
+        <% if(noticeList != undefined && noticeList.length > 0) { noticeList.forEach(function(element) { %>
+        <li>
+          <span class="notice_title"><a href="/board/notice/view/<%- element.BOARD_KEY%>"><%- element.BOARD_TITLE%></a></span>
+          <span class="notice_data"><%- element.CREATE_DT%></span>
+        </li>
+        <% }); } else { %>
+          <span>검색된 데이터가 없습니다.</span>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="main_box">
+      <ul>
+        <li class="title_line">
+          <span class="div-left">
+            <h4>데이터 활용</h4>
+          </span>
+          <span class="plus_icon"><a href="/data"><span class="glyphicon glyphicon-plus"
+                aria-hidden="true"></span></a></span>
+        </li>
+        <% if(dataUseList != undefined && dataUseList.length > 0) { dataUseList.forEach(function(element) { %> 
+          <li>
+            <span class="notice_title"><a href="/data/view/<%- element.BOARD_KEY%>"><%- element.BOARD_TITLE%></a></span>
+            <span class="notice_data"><%- element.CREATE_DT%></span>
+          </li>
+        <% }); } else { %>
+          <span>검색된 데이터가 없습니다.</span>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<!-- 게시판 검색 결과 -->
+
+<!-- 장치현황 검색 결과 -->
+<div class="row">
+  <div class="search_box">
+    <ul>
+      <li class="title_line">
+        <span class="div-left">
+          <h4>장치현황</h4>
+        </span>
+        <span class="plus_icon"><a href="/equipment/list"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></span>
+      </li>
+      <li>
+        <% if(equipList != undefined && equipList.length > 0) { equipList.forEach(function(item) { %> 
+          <div class="search_img col-md-3 col-sm-2">
+            <a href="/equipment/view/<%- item.EQUIP_KEY%>"><img src="/file/download/<%- item.FILE_KEY%>" class="img-responsive" alt=""></a>
+            <p class="search_title">장치명 : <%- item.EQUIP_NM%></p>
+            <p class="search_text"><%- item.PROP_VAL1%></p>
+            </a>
+          </div>
+        <% }); } else { %>
+          <span>검색된 데이터가 없습니다.</span>
+        <% } %>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- 장치현황 검색 결과 -->
+
+<!-- 베이스카 검색 결과 -->
+<div class="row">
+  <div class="search_box">
+    <ul>
+      <li class="title_line">
+        <span class="div-left">
+          <h4>베이스카 현황</h4>
+        </span>
+        <span class="plus_icon"><a href="/basecar/list"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></span>
+      </li>
+      <li>
+        <% if(basecarList != undefined && basecarList.length > 0) { basecarList.forEach(function(item) { %> 
+          <div class="search_img col-md-3 col-sm-2">
+            <a href="/basecar/view/<%- item.BASECAR_KEY%>"><img src="/file/download/<%- item.FILE_KEY%>" class="img-responsive" alt=""></a>
+            <p class="search_title">명칭 : <%- item.BASECAR_NM%></p>
+            <p class="search_text"><%- item.BASECAR_STANDARD%></p>
+            </a>
+          </div>
+        <% }); } else { %>
+          <span>검색된 데이터가 없습니다.</span>
+        <% } %>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- 베이스카 검색 결과 -->
+
+<!-- 완성차 검색 결과 -->
+<div class="row">
+  <div class="search_box">
+    <ul>
+      <li class="title_line">
+        <span class="div-left">
+          <h4>완성차 현황</h4>
+        </span>
+        <span class="plus_icon"><a href="/prodcar/list"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></span>
+      </li>
+      <li>
+        <% if(prodcarList != undefined && prodcarList.length > 0) { prodcarList.forEach(function (item) { %> 
+          <div class="search_img col-md-3 col-sm-2">
+            <a href="/prodcar/view/<%- item.PRODCAR_KEY%>"><img src="/file/download/<%- item.FILE_KEY%>" class="img-responsive" alt=""></a>
+            <p class="search_title">명칭 : <%- item.PRODCAR_NM%></p>
+            </a>
+          </div>
+        <% }); } else { %>
+          <span>검색된 데이터가 없습니다.</span>
+        <% } %>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- 완성차 검색 결과 -->

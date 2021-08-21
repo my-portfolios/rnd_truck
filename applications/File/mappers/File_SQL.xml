@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="File">  
+
+   <insert id="insertFileInfo">
+		INSERT INTO FILE (
+			USE_TYPE,
+			USE_VAL,
+			SORT_ORDER,
+			FILE_DESC,
+			SAVE_PATH,
+			SAVE_NAME,
+			ORGIN_NAME,
+			FILE_TYPE,
+      <if test="remark != undefined and remark != ''">
+			REMARK,
+      </if>
+			USE_YN,
+			CREATE_ID,
+			UPDATE_ID
+		) VALUES (
+			#{useType},
+			#{useVal},
+			#{sortOrder},
+			#{fileDesc},
+			#{savePath},
+			#{saveName},
+			#{orginName},
+			#{fileType},
+      <if test="remark != undefined and remark != ''">
+			#{remark},
+      </if>
+			'Y',
+			#{createId},
+			#{updateId}
+		)
+   </insert>
+
+	<update id="updateFileInfo">
+		UPDATE 
+			FILE 
+		SET
+			<if test="savePath != null and savePath != ''">
+				SAVE_PATH = #{savePath},
+			</if>
+			<if test="saveName != null and saveName != ''">
+				SAVE_NAME = #{saveName},
+			</if>
+			<if test="orginName != null and orginName != ''">
+				ORGIN_NAME = #{orginName},
+			</if>
+			<if test="fileType != null and fileType !=''">
+				FILE_TYPE = #{fileType},
+			</if>
+			<if test="remark != null and remark !=''">
+				REMARK = #{remark},
+			</if>
+			UPDATE_ID = #{updateId}
+		WHERE 1=1
+			AND FILE_KEY = #{fileKey}
+	</update>
+
+   <select id="getFileList">
+		SELECT
+			FILE_KEY,
+			USE_TYPE,
+			USE_VAL,
+			SORT_ORDER,
+			FILE_DESC,
+			SAVE_PATH,
+			SAVE_NAME,
+			ORGIN_NAME,
+			FILE_TYPE,
+			REMARK,
+			USE_YN,
+			CREATE_ID,
+			UPDATE_ID,
+			CREATE_DT,
+			UPDATE_DT
+		FROM
+			FILE
+		WHERE 1=1
+			<if test="fileKey != null and fileKey != ''">
+				AND FILE_KEY = #{fileKey}
+			</if>	
+			<if test="useType != null and useType != ''">
+				AND USE_TYPE = #{useType}
+			</if>	
+			<if test="useVal != null and useVal != ''">
+				AND USE_VAL = #{useVal}
+			</if>	
+			<if test="fileDesc != null and fileDesc != ''">
+				AND FILE_DESC = #{fileDesc}
+			</if>	
+			<if test="fileDescArray != null and fileDescArray != ''">
+				AND FILE_DESC IN (
+					<foreach collection="fileDescArray" item="name" separator=", ">#{name}</foreach>
+				)
+			</if>	
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>	
+			<if test="useYn != null and useYn != ''">
+				AND USE_YN = #{useYn}
+			</if>	
+		ORDER BY UPDATE_DT DESC, remark ASC, FILE_DESC ASC
+		<if test="limitCnt != null and limitCnt != ''">
+			LIMIT ${limitCnt}
+		</if>
+   </select>
+
+   <delete id="removeFile">
+		DELETE FROM
+			FILE
+		WHERE 1=1
+			AND FILE_KEY = #{fileKey}
+   </delete>
+
+	<delete id="removeFilesFromUse">
+	  DELETE FROM 
+		  FILE 
+		<where>
+			<if test="useType != null and useType != ''">
+				AND USE_TYPE = #{useType} 
+			</if>
+			<if test="useVal != null and useVal != ''">
+				AND USE_VAL = #{useVal} 
+			</if>
+			<if test="sortOrder != null and sortOrder != ''">
+				AND SORT_ORDER = #{sortOrder} 
+			</if>
+			<if test="fileDesc != null and fileDesc != ''">
+				AND FILE_DESC = #{fileDesc} 
+			</if>
+		</where>
+	</delete>
+
+  <select id="selectMaxSortorder">
+    SELECT
+      MAX(SORT_ORDER) AS MAXNUM
+    FROM
+      FILE
+    WHERE
+      USE_TYPE = #{useType}
+      AND USE_VAL = #{useVal}
+      <if test="fileDesc != undefined and fileDesc != ''">
+        AND FILE_DESC = #{fileDesc}
+      </if>
+  </select>
+
+</mapper>

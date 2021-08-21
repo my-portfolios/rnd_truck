@@ -1,0 +1,97 @@
+<style>
+    .errors {
+      color: red;
+      background-color: #acf;
+   }
+  </style>
+  
+  <script>
+    $(function(){
+        $("#joinForm").validate({
+            submitHandler: function(form) {
+  
+                if(confirm("정보수정을 완료하겠습니까?")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            errorClass: 'errors',
+            rules: {
+              entprNm: {
+                  required : true
+              },
+              entprTelNumber: {
+                  required: true
+              },
+              managerNm: {
+                required: true
+              },
+              managerTelNumber: {
+                required: true
+              },
+              managerEmail: {
+                required: true
+              }
+          },
+          messages : {
+              entprNm: {
+                  required : "이름을 입력하세요",
+              },
+              entprTelNumber: {
+                  required: '전화번호를 입력하세요'
+              },
+              managerNm: {
+                required: '담당자 이름을 입력하세요'
+              },
+              managerTelNumber: {
+                required: '담당자 연락처를 입력하세요'
+              },
+              managerEmail: {
+                required: '담당자 이메일을 입력하세요.'
+              }
+          }
+        });
+  
+        $("#findAddress").click(function() {
+            FormUtility.getAddressFromDaumPostcode(this, function(data) {
+                $("[name='entprAdres']").val(data.address);
+            });
+        });
+  
+        $('[name=entprTelNumber], [name=managerTelNumber]').keyup(function() {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+
+        $('#btn_releaseUser').click(function() {
+                
+                $('#updateForm').attr('action', '/user/releaseEntpr');
+                $('#updateForm').submit();
+            });
+    });
+  </script>
+  
+  <form id="updateForm" action="/user/updateEntprInfo" method="post" class="join_form form-signin">
+  
+  <div class="row">
+    <input type="hidden" name="userKey" value="<%- params[0].USER_KEY%>"/>
+    <input type="text" name="userId" placeholder="아이디 입력 (4~20자 이내 영문 소문자, 숫자만 가능합니다.)" class="form-control" readonly value="<%- params[0].USER_ID%>"/>
+    <input type="password" name="password" placeholder="비밀번호 (최소 8글자이상이어야 합니다)" class="form-control"/>
+    <input type="password" name="repassword" placeholder="비밀번호 확인" class="form-control"/>
+    <input type="text" name="entprNm" placeholder="업체명" class="form-control" value="<%- params[0].ENTPR_NM%>"/>
+    <input type="text" name="entprNum" placeholder="사업자번호" class="form-control" value="<%- params[0].ENTPR_NUM%>"/>
+    <input type="text" name="brandNm" placeholder="대표브랜드" class="form-control" value="<%- params[0].BRAND_NM%>"/>
+    <input type="text" name="entprOwnerNm" placeholder="대표자명" class="form-control" value="<%- params[0].ENTPR_OWNER_NM%>"/>
+    <input type="text" name="entprTelNumber" maxlength="11" placeholder="회사전화번호('-' 제외)" class="form-control" value="<%- params[0].ENTPR_TEL_NUMBER%>"/>
+    <input type="text" name="managerNm" placeholder="담당자명" class="form-control" value="<%- params[0].MANAGER_NM%>"/>
+    <input type="text" name="managerTelNumber" maxlength="11" placeholder="담당자전화번호('-' 제외)" class="form-control" value="<%- params[0].MANAGER_TEL_NUMBER%>"/>
+    <input type="text" name="managerEmail" placeholder="담당자메일" class="form-control" value="<%- params[0].MANAGER_EMAIL%>"/>
+    <input type="text" name="entprAdres" placeholder="주소" readonly="readonly" class="form-control" style="display: inline-block;width: 70%;" value="<%- params[0].ENTPR_ADRES%>"/> 
+    <button type="button" id="findAddress" class="btn btn-primary">검색</button>
+    <input type="text" name="entprDetailAdres" placeholder="상세 주소" class="form-control" value="<%- params[0].ENTPR_DETAIL_ADRES%>"/>
+    <p class="text-center">
+        <button type="submit" class="btn btn-primary">수정</button>
+        <button type="button" id="btn_releaseUser" class="btn btn-primary">회원탈퇴</button>
+    </p>    
+  </div>
+  </form>

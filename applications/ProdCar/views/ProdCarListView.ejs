@@ -1,0 +1,123 @@
+<script>
+    var dgMain;
+    $(function() {
+        dgMain = new tui.Grid({
+			el: $('#dgMain')[0],
+		    scrollX: true,
+		    scrollY: true,
+			bodyHeight: 500,
+			rowHeight: 110,
+		    rowHeaders: ['rowNum'],
+		    columns: [
+			    {
+			    	header: '이름',
+			    	name: 'prodcarNm',
+                    align: 'center',
+                    width: 300,
+			    	resizable: true,
+			    	sortable: true
+				},				
+			    {
+			    	header: '모델명',
+			    	name: 'prodcarModelId',
+                    align: 'center',
+                    width: 350,
+			    	resizable: true,
+			    	sortable: true
+				},
+			    {
+			    	header: '제조회사',
+			    	name: 'prodcarManuId',
+                    align: 'center',
+                    width: 250,
+			    	resizable: true,
+			    	sortable: true
+				},
+				{
+			    	header: '가격',
+			    	name: 'prodcarPrice',
+                    align: 'center',
+                    width: 300,
+			    	resizable: true,
+			    	sortable: true
+				},	
+			    {
+			    	header: '상세'
+			    	, name: 'detailView'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+			    	, sortable: true
+			    	, renderer: {
+			    		type: CustomButtonRenderer
+			    	}
+			    }
+			]
+		});
+		
+		searchMain();
+    });
+
+	function CustomButtonRenderer(props) {
+        var el = document.createElement('input');
+        el.type = 'button';
+        this.el = el;
+		this.el.value = "상세";
+		this.el.className = "btn btn-primary";
+        this.el.onclick = function() {
+			var rowInfo = props.grid.getRow(props.rowKey);
+			moveToEditOrDetailPage(rowInfo.prodcarKey);
+        }
+       
+      	this.getElement = function() {
+        	return this.el;
+      	};
+	}
+
+	function moveToEditOrDetailPage(prodcarKey) {
+		location.href = '/prodcar/view/' + prodcarKey;
+    }
+
+    function createAction() {
+		location.href="/prodcar/write";
+	}
+	
+	function searchMain() {
+		$.get('/prodcar/data/list', {
+			searchType: $("#searchType").val(),
+			searchValue: $("#searchValue").val()
+		}, function(data) {
+			if(data.result != null && data.result == false) {
+				alert('완성차 현황을 가져오는 데 실패하였습니다.');	
+			} else { dgMain.resetData(data); }
+		}).fail(function(e) {
+			alert('완성차 현황을 가져오는 데 실패하였습니다.');
+		});
+	}
+
+</script>
+
+<!--검색영역-->
+<div class="row">
+	<div class="col-md-6 col-md-offset-2 col-xs-12 div-right">
+
+		<div class="input-group">
+			<select id="searchType">
+				<option value="">검색 조건</option>
+				<option value="prodcarNm">이름</option>
+				<option value="prodcarModelId">모델명</option>
+				<option value="prodcarManuId">제조회사</option>
+			</select>
+			
+			<span class="input-group-btn">
+				<input type="text" id="searchValue" class="form-control" placeholder="Search..." >
+				<button type="button" onclick="searchMain();" class="btn btn-primary">검색</button>
+			</span>
+		  </div>
+
+	</div>
+</div>
+<!--검색영역-->
+
+<div id="dgMain"></div>
+

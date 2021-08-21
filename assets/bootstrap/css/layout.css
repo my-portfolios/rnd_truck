@@ -1,0 +1,295 @@
+/* layout STYLES  */
+
+.wrapper {
+    width: 100%;
+    margin: 0 auto;
+    min-width: 100%;
+    min-height: 100%;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.top_menu {margin: 5px 20px 5px 0px;}
+.top_menu li { display: inline-block; color: #ffffff; margin-left: 10px;     border-radius: 30px;    border: 1px solid #ffffff;    padding: 0px 10px;}
+.top_menu li a {
+	color: #ffffff;
+    font-weight: 400;
+    font-size: 85%;
+}
+.top_menu li.bt_login {
+    background: #18a9ec;
+    border: 1px solid #18a9ec;
+}
+
+.top_menu li a .badge {color: #0b70b9; background-color: #fff;}
+
+/* NAVBAR */
+.navbar-brand, .navbar-nav>li>a { text-shadow: none;}
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.open>a {
+	font-weight: bold; color: #f3f148 !important; background-color: transparent;background-image: none;box-shadow: none;
+}
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover { background-color: transparent;}
+
+.navbar-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+}
+
+.navbar-wrapper > .container {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.navbar-wrapper .navbar {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+.navbar-wrapper .navbar-inverse {    border-color: transparent; background: transparent;}
+/*.navbar-wrapper .navbar-inverse { border-color:#0b70b9; background: #0b70b9;}*/
+
+/*.navbar-wrapper .navbar .container {
+  width: auto;
+}*/
+
+.nav>li {
+    position: relative;
+    display: block;
+    padding: 0px 10px;
+}
+.nav>li.active {font-weight: bold; color: #f3f148 !important;}
+
+.dropdown-menu {min-width: 143px;	padding: 10px 20px;    border-top: 2px solid #FFC107; border-top: 2px solid #18a9ec;}
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a { color: #ffffff;text-align: center; font-weight: bold; font-size: 16px;/*min-width: 140px;  left: -9px;*/}
+.navbar-inverse .navbar-nav>li>a:focus, .navbar-inverse .navbar-nav>li>a:hover { color: #f3f148;  background-color: transparent;font-weight: bold;}
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {box-shadow: none;    background-color: transparent;}
+
+.navbar-inverse .navbar-toggle {
+    border-color: #fdfdfd;
+    box-shadow: none;
+    border-radius: 0px;
+}
+
+/* 메인 - 검색 영역 */
+.main-section-search {
+    position: absolute;
+    z-index: 9;
+    margin: 310px 20% 50px 20%;
+    width: 60%;
+    text-align: center;
+}
+
+.main-section-search:before,
+.main-section-search:after {content:''; display:table;}
+.main-section-search:after {clear:both;}
+
+.main-section-search .input-box {position:relative; height:64px; padding:0 64px 0 0; background-color:#fff; box-shadow: 1px 1px 10px 0px rgba(0,0,0,0.3);}
+.main-section-search .input-box .input-text {display:block; width: 100%; height:100%; padding:0 15px; font-size:1.2857em; border:0; background-color:transparent;}
+.main-section-search .input-box .btn-search {overflow:hidden; display:block; position:absolute; right:0; top:0; width: 70px; height:100%; color: #ffffff; font-size: 28px;background:#18a9ec;  border: 0px;line-height: 25px;}
+
+
+
+/* Carousel base class */
+.carousel {
+  top: 0px;
+  height: 550px;
+}
+.carousel-caption {
+  z-index: 10; padding-bottom: 60px;
+}
+.carousel-caption .btn {
+    text-shadow: none;
+    margin-top: 100px;
+}
+
+.carousel .item {
+  height: 550px;
+  background-color: #777;
+}
+.carousel-inner > .item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 550px;
+}
+
+
+/* 메인 본문 영역 */
+.marketing {margin-top: 50px;}
+.marketing .col-lg-4 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+
+
+.featurette-divider {
+  margin: 20px 0; /* Space out the Bootstrap <hr> more */
+}
+
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+/* 메인 - 최근글 영역 */
+.main_box { border: solid 0px #dedede;  padding: 10px 15px;    height: 250px;    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.2);}
+.main_box li {text-align: left; line-height: 15px; clear: both;}
+.main_box .plus_icon {display: inline-block;margin: 10px 0px;}
+.main_box .plus_icon a { color:#FF0004; }
+.main_box .plus_icon a:hover {    color: #337ab7;}
+.main_box h4 { font-weight: bold; }
+.main_box .notice_title {
+	line-height: 27px;
+    width: 75% !important;
+    height: auto;
+    padding-right: 10px;
+    display: inline-block;
+    overflow: hidden;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px !important;
+}
+.main_box .notice_data {
+	vertical-align: top;
+    display: inline-block;
+    text-align: right;
+    float: right;
+    clear: both;
+    margin-top: 3px;
+}
+
+.main_box .title_line {border-bottom: solid 1px #d7d7d7;   padding-bottom: 35px;    margin-bottom: 10px;}
+
+/* sub 컨텐츠 영역 */
+.sub_navbar {border-color: #0b70b9 !important;   background: #0b70b9 !important;}
+.sub_menu {top: 50px;     position: relative;    margin: 80px 0px 30px 0px;    text-align: center;    letter-spacing: -2px;}
+.sub_title {color: #343434;   margin: 20px 0px;}
+.sub_nav { width: 100%;  text-align: center; letter-spacing: 1px; }
+	
+.sub_content {
+    top: 50px;
+    position: relative;
+    padding-bottom: 100px;
+    text-align: justify;
+    min-height: 694px;
+}
+
+/* 풋터 */
+footer {
+    background: #182035;
+    padding: 20px 0px;
+    color: #ffffff;
+	position: relative;
+    bottom: -69px;
+    width: 100%;
+}
+footer a:hover {color: #f3f148;}
+.scroll-to-top {
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    color: #fff;
+    background: rgba(90,92,105,.5);
+}
+.scroll-to-top:hover {
+    background: #5a5c69; color: #ffffff;
+}
+
+/* 공통 CSS */
+.btn {border-radius: 15px;}
+.ml-auto, .mx-auto {  margin-left: auto !important; }
+.inline_block {display: inline-block;}
+.div-left {float: left;}
+.div-right {float: right;}
+
+/* 부트스트랩 RESPONSIVE CSS  */
+@media (min-width: 1401px) {
+	.container {
+		width: 1400px;
+	}
+}
+
+@media (min-width: 768px) {
+
+  .navbar-nav {
+		float: right;
+		margin: 0;
+	}
+	.navbar-wrapper {
+    margin-top: 20px;
+  }
+  .navbar-wrapper .container {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+  .navbar-wrapper .navbar {
+    padding-right: 0;
+    padding-left: 0;
+	padding-bottom: 10px;
+  }
+.carousel-caption {  right: 20%;  left: 20%;   padding-bottom: 50px;}
+	.carousel-caption p .btn {margin-top: 100px;}
+	
+	
+  .carousel-caption p {
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 1.4;
+  }
+
+  .featurette-heading {
+    font-size: 50px;
+  }
+}
+
+@media (min-width: 992px) {
+  .featurette-heading {
+    margin-top: 120px;
+  }
+}
+
+/* 추가 RESPONSIVE CSS  */
+@media (max-width: 1220px) {
+	.main_box .notice_title { width: 76% !important; text-align: left;}
+}
+@media (max-width: 1204px) {
+	.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a { font-size: 14px !important; }
+	.nav>li { padding: 0px 0px; }
+	.carousel-caption p {font-size: 15px;}
+}
+@media (max-width: 768px) {
+	.top_menu {  margin: 5px 0px;}
+	.nav>li {border-bottom: 1px solid #ffffff;}
+	.navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a {text-align: left; }
+	.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {    border-color: #ffffff; margin-top: 10px;}
+	.navbar-inverse .navbar-toggle:focus, .navbar-inverse .navbar-toggle:hover {    background-color: #18a9ec; }
+	.navbar-inverse .navbar-nav .open .dropdown-menu>li>a {  color: #ffffff;   padding: 5px 0px;}
+	.navbar-fixed-bottom .navbar-collapse, .navbar-fixed-top .navbar-collapse {    max-height: auto; }
+	.navbar-nav .open .dropdown-menu {padding: 0px 15px;}
+	.navbar-wrapper .navbar-inverse {
+    border-color: #0b70b9  !important;
+    background: #0b70b9  !important;
+    padding-bottom: 20px;
+}
+	.main-section-search { margin: 325px 10% 0px 10%;  width: 75%; }
+	.main_box .notice_title { width: 76% !important; text-align: left;}
+}
+@media (max-width: 400px) {
+  .main_box .notice_title { width: 69% !important; text-align: left;}
+}
+@media (max-width: 301px) {
+  body, .navbar-wrapper .navbar {width:300px;}
+  .main-section-search { margin: 220px 0%;  width: 90%; }
+}
+

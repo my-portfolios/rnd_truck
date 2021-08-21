@@ -1,0 +1,202 @@
+<script>
+    var propInfo = <%- JSON.stringify(propInfo); %>
+    $(function() {
+        $.get('/code/data/list/propDataType', function(data) {
+            data.forEach(function(code) {
+                var option = $('<option>', {value: code.codeId, text: code.codeNm})[0];
+                if(propInfo.dataType == code.codeId) { option.selected = 'selected'; }
+                $("[name='dataType']").append(option);
+            });
+
+            <% if(propInfo.dataType != 'UNDEFINED') { %>
+                inputElementToSpan($("#codePropForm"));
+            <% } %>
+        });
+        
+        $("[name='dataMinLength']").val('<%- propInfo.dataMinLength %>');
+        $("[name='dataMaxLength']").val('<%- propInfo.dataMaxLength %>');
+        $("[name='dataRefObj']").val('<%- propInfo.dataRefObj %>');
+        $("[name='dataRefVal']").val('<%- propInfo.dataRefVal %>');
+        $("[name='dataInfoMessage']").val('<%- propInfo.dataInfoMessage %>');
+        $("[name='dataRegex']").val('<%- propInfo.dataRegex %>');
+        $("[name='dataRegexTag']").each(function(i, iv) {
+            var dataRegexTag = <%- JSON.stringify( propInfo.dataRegexTag == null ? '' : propInfo.dataRegexTag) %>;
+            if(dataRegexTag.indexOf($(iv).val()) != -1) { $(iv).prop('checked', 'checked'); }
+        });
+
+        $("[name='dataRefObj']").change(function(event) { 
+            $(".dataRefVal").hide();
+            if(['BASECAR', 'BUNKER'].indexOf($(this).val()) != -1) { return; }
+            $(".dataRefVal").show();
+        });
+        $("[name='dataType']").change(function(event) {
+            changeDataTypeEvent($(this).val());
+        });
+        $("[name='dataType']").click(function(event) {
+            var isEmpty = true;
+            if($("[name='dataMinLength']").val() != "" || $("[name='dataMaxLength']").val() != "" || $("#dataRegex").val() != "" || $("#dataRefObj :selected").val() != "" || $("#dataRefVal").val() != "") { isEmpty = false; }
+            if(!isEmpty && confirm('데이터 유형 변경 시 기존에 입력된 값이 지워집니다. 계속하시겠습니까?')) { 
+                $("[name='dataMinLength']").val("");
+                $("[name='dataMaxLength']").val("");
+                $("#dataRegex").val("");
+                $("[name='dataRegexTag']").prop('checked', '');
+                $("#dataRefObj").val("");
+                $("#dataRefVal").val("");
+            }
+        });
+
+        changeDataTypeEvent(propInfo.dataType);
+    });
+
+    function changeDataTypeEvent(dataType) {
+        $(".dataRegex, .dataRefObj, .dataRefVal, .dataInfoMessage, .dataLength").hide();
+
+        switch(dataType) {
+            case 'STRING': case 'NUMBER': case 'INTEGER': case 'FLOAT':
+                $(".dataLength").show();
+            break;
+            case 'CUSTOM':
+                $(".dataRegex, .dataInfoMessage, .dataLength").show();
+            break;
+            case 'DATA':
+                $(".dataRefObj").show();
+            break;
+        }
+    }
+
+    function codePropFormCheck() {
+        var dataType = $("[name='dataType']").val();
+
+        if(dataType == 'UNDEFINED') { 
+            alert('데이터 유형을 선택하세요.');
+            return false;
+        } else if(dataType != 'DATA') {
+            if(StringUtility.checkNumber($("[name='dataMinLength']").val()) == false || $("[name='dataMinLength']").val() < 1 || $("[name='dataMinLength']").val() > 255) { 
+                alert('데이터의 최소 길이는 1~255자까지 가능합니다.'); 
+                return false; 
+            }
+            else if(StringUtility.checkNumber($("[name='dataMaxLength']").val()) == false || $("[name='dataMaxLength']").val() < 1 || $("[name='dataMaxLength']").val() > 255) { 
+                alert('데이터의 최대 길이는 1~255자까지 가능합니다.');
+                return false; 
+            }
+            else if(parseInt($("[name='dataMinLength']").val()) > parseInt($("[name='dataMaxLength']").val())) { 
+                alert('데이터의 최소 길이가 최대 길이보다 큽니다.');
+                return false; 
+            } 
+        } else if(dataType == 'CUSTOM' && $("#dataRegex").val() == "") { 
+            alert('정규표현식을 입력하세요.');
+            return false;
+        } else if(dataType == 'DATA' && $("#dataRefObj :selected").val() == "") {
+            alert("데이터 참조 대상을 선택하세요.");
+            return false;
+        } else if(dataType == "CUSTOM" && ($("#dataRegex").val() != "" || $("#dataRefVal").val() != "") && $("#dataInfoMessage").val() == "") {
+            alert("입력 조건을 표시할 안내메시지를 입력하세요.");
+            return false;
+        } 
+
+        $("[name='dataRegex']").val($("[name='dataRegex']").val().replace(/\\/g, '\\\\'));
+        return true;
+    }
+
+    function inputElementToSpan(el) {
+        $(el).find("input[type='text'], input[type='checkbox'], select").each(function(i, iv) {
+            var tagName = $(iv).prop('tagName').toLowerCase();
+            var text = (tagName == 'select') ? $(iv).find(":selected").text() : iv.value;
+            var el = $("<span>", {text: text});
+                
+            if(tagName == 'input' && $(iv).attr('type') == 'checkbox') {
+                if($(iv).prop("checked")) { $(iv).parent().after(el); }
+                $(iv).parent().remove();
+            } else {
+                $(iv).replaceWith(el);
+            }
+        });
+    }
+
+    function moveToList() {
+        moveToPreviousPageForm.submit();
+    }
+</script>
+
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title" style="text-align: left;">데이터 명: <%- propInfo.propName %></h3>
+    </div>
+    <div class="panel-body">
+        1. 데이터 유형 설명<br/>
+         - 미정의: 데이터 유형이 정의되지 않은 상태입니다. 이 경우, 등록이 불가능합니다.<br/>
+         - 문자형: 데이터를 문자로 입력받을 수 있습니다.<br/>
+         - 숫자형: 데이터를 자연수만 입력받을 수 있습니다.<br/>
+         - 정수형: 데이터를 정수만 입력받을 수 있습니다.<br/>
+         - 실수형: 데이터를 실수만 입력받을 수 있습니다.<br/>
+         - 데이터 참조형: 기존에 등록된 데이터를 참조하여 입력받을 수 있습니다.<br/>
+         - 정의형: 정규표현식에 부합되는 데이터를 입력받을 수 있습니다.<br/>
+        2. 데이터 정의는 최초 1회에만 가능하며 이후에는 변경이 불가능합니다.
+    </div>
+  </div>
+
+<form id="codePropForm" action="/code/prop/info/write?_method=put" method="post" onsubmit="return codePropFormCheck();">
+    <input type="hidden" name="propInfoKey" value="<%- propInfo.propInfoKey %>"/>
+    <input type="hidden" name="redirectUrl" value="<%- redirectUrl %>"/>
+    <div class="board_list"> 
+        <table>
+            <tr>
+                <th>데이터 유형</th>
+                <td>
+                    <select name="dataType"></select>
+                </td>
+            </tr>
+            <tr class="dataLength">
+                <th>데이터 길이</th>
+                <td>
+                    최소: <input type="text" name="dataMinLength" style="width: 100px;"/>
+                    최대: <input type="text" name="dataMaxLength" style="width: 100px;" />
+                </td>
+            </tr>
+            <tr class="dataRegex">
+                <th>정규표현식</th>
+                <td>
+                    &nbsp;/&nbsp;<input type="text" name="dataRegex" id="dataRegex" style="width:400px;"/>&nbsp;/&nbsp;
+                    <label><input type="checkbox" name="dataRegexTag" value="g" />g</label>
+                    <label><input type="checkbox" name="dataRegexTag" value="i" />i</label>
+                    <label><input type="checkbox" name="dataRegexTag" value="m" />m</label>
+                    <br/>
+                </td>
+            </tr>
+            <tr class="dataRefObj">
+                <th>데이터 참조 대상</th>
+                <td>
+                    <select name="dataRefObj" id="dataRefObj">
+                        <option value="">선택</option>
+                        <option value="CODE">코드</option>
+                        <option value="BASECAR">베이스카</option>
+                        <option value="BUNKER">벙커</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="dataRefVal">
+                <th>데이터 참조 값</th>
+                <td><input type="text" name="dataRefVal" id="dataRefVal"/></td>
+            </tr>
+            <tr class="dataInfoMessage">
+                <th>안내메시지</th>
+                <td>
+                    <input type="text" name="dataInfoMessage" id="dataInfoMessage"/>
+                    <% if(propInfo.dataType == 'UNDEFINED') { %>
+                        <br/>입력 조건을 표시할 안내메시지를 입력하세요.
+                    <% } %>
+                </td>
+            </tr>
+        </table>
+        <p class="text-center">
+            <% if(propInfo.dataType == 'UNDEFINED') { %>
+                <input type="submit" class="btn btn-primary" value="등록" >
+            <% } %>
+            <input type="button" class="btn btn-primary" value="목록" onclick="moveToList();">
+        </p>
+    </div>
+</form>
+
+<form id="moveToPreviousPageForm" action="<%- redirectUrl %>" method="POST" />
+    

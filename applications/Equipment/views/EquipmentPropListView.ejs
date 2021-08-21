@@ -1,0 +1,353 @@
+
+<script>
+	var selectOptionYn = [
+		{text: '예', value: 'Y'},
+		{text: '아니오', value: 'N'}
+	];
+
+	var isAppendRowMode = false;
+
+	$(function(){
+		dgMain = new tui.Grid({
+		    el: $('#dgMain')[0],
+		    scrollX: true,
+		    scrollY: true,
+		    bodyHeight: 500,
+		    rowHeaders: [ 'checkbox' ],
+		    columns: [
+			    {
+			    	header: '순서'
+			    	, name: 'propOrder'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+					, width: 180
+					, editor: {
+						type: 'text'
+					}
+			    },
+			    {
+			    	header: '데이터 이름'
+			    	, name: 'propName'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+			    	, width: 300
+			    	, editor: {
+						type: 'text'
+					}
+			    },
+				{
+			    	header: '필수 여부'
+			    	, name: 'dataRequired'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+					, width: 150
+			    	, editor: {
+						type: 'select',
+						options: {
+							listItems: selectOptionYn
+						}
+				    }
+			    	, formatter: function(props) { return TuiGridUtility.selectOptionFormatter(selectOptionYn, props); }
+				},
+				{
+			    	header: '사용 여부'
+			    	, name: 'useYn'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+					, width: 150
+			    	, editor: {
+						type: 'select',
+						options: {
+							listItems: selectOptionYn
+						}
+				    }
+			    	, formatter: function(props) { return TuiGridUtility.selectOptionFormatter(selectOptionYn, props); }
+				},
+			    {
+			    	header: '생성일시'
+			    	, name: 'createDt'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+					, width: 200
+			    },
+			    {
+			    	header: '수정일시'
+			    	, name: 'updateDt'
+			    	, align: 'center'
+			    	, resizable: true
+					, sortable: true
+					, width: 200
+			    },
+			    {
+			    	header: '관리자'
+			    	, name: 'manageControl'
+			    	, align: 'center'
+			    	, width: 120
+			    	, resizable: true
+			    	, sortable: true
+			    	, renderer: {
+			    		type: CustomButtonRenderer
+			    	}
+			    }
+			]
+		});
+
+		dgMain.on('editingStart', function(event) {
+			if(event.columnName == 'propOrder' && !TuiGridUtility.getWhetherCreatedRows(event.instance, event.rowKey)) {
+				alert('이미 정의된 컬럼은 순서를 변경할 수 없습니다.');
+				setTimeout(function() {
+					event.instance.finishEditing(event.rowKey, event.columnName, event.value);
+				}, 150);	
+			}
+		});
+		searchMain();
+	});
+	    
+	function CustomButtonRenderer(props) {
+        var el = document.createElement('input');
+        el.type = 'button';
+        this.el = el;
+		this.el.value = "관리";
+		this.el.className = "btn btn-primary";
+        this.el.onclick = function() {
+			var rowInfo = props.grid.getRow(props.rowKey);
+			moveToDetailManagePage(rowInfo.propInfoKey);
+        }
+
+        if(TuiGridUtility.getWhetherCreatedRows(props.grid, props.rowKey)) {
+			this.el.style = "display:none;"
+		}
+       
+      	this.getElement = function() {
+        	return this.el;
+      	};
+	}
+	
+    function searchMain() {
+		dgMain.clear();
+		$.get('/code/prop/data/list/<%- codeInfo.codeKey %>', function(data) {
+			if(data.length > 0) { dgMain.resetData(data); }
+		}).fail(function(err) {
+			alert('장치 분류 데이터를 가져오는 중에 오류가 발생하였습니다.');
+		});
+   	}
+
+	function appendRow() {
+		var updateList = dgMain.getModifiedRows().updatedRows;
+
+		if(updateList != null && updateList.length > 0) {
+			alert('수정된 내용이 있습니다. 저장 후 다시시도 하십시오.');
+			return;
+		} else if(dgMain.getData().length > 10) { 
+			alert('데이터는 최대 10개까지 등록가능합니다.'); 
+			return; 
+		}
+
+		if(!isAppendRowMode) {
+			isAppendRowMode=true;
+			$.each(dgMain.getData(), function(i, iv) {
+			    dgMain.disableRow(iv.rowKey);
+			});
+		}		
+
+		$('#cancelAppendRowBtn').show();
+		dgMain.appendRow(new Object(), {focus: true});
+	}
+
+	function cancelAppendRow() {
+		var createList = dgMain.getModifiedRows().createdRows;
+
+		if(createList != null && createList.length > 0) {
+			if(confirm("추가한 내용이 모두 지워집니다. 계속하시겠습니까?")) {
+				$.each(createList, function(i, iv) {
+					dgMain.removeRow(iv.rowKey);
+				});
+
+				hideCancelAppendRowBtn();
+			}
+		}
+	}
+
+	function hideCancelAppendRowBtn() {
+		isAppendRowMode=false;
+		$('#cancelAppendRowBtn').hide();
+		dgMain.enable();
+	}
+
+	function insertMain() {
+		var insertList = dgMain.getModifiedRows().createdRows;
+
+		$.each(insertList, function(i, iv) {
+			iv.codeKey = '<%- codeInfo.codeKey %>';
+			iv.dataType = 'UNDEFINED';
+			iv.dataRegex = null;
+			iv.dataRegexTag = null;
+			iv.dataRefObj = null;
+			iv.dataRefVal = null;
+			iv.dataInfoMessage = null;
+		});
+
+		$.post('/code/prop/data/write', {
+			insertList: JSON.stringify(insertList)
+		}, function(event) {
+			if(event.result == false) {
+				switch(event.code) {
+					case -1:
+						alert('로그인이 필요합니다.');	
+						location.href='/auth/login';
+					break;
+					case -2:
+						alert('관리자만 가능합니다.');	
+					break;
+					default:
+						alert('저장에 실패하였습니다.');	
+					break;
+				}
+			} else {
+				alert('저장하였습니다.');
+				hideCancelAppendRowBtn();
+				searchMain();
+			}
+		}).fail(function() {
+			alert('저장에 실패하였습니다.');
+		});
+	}
+		
+    function updateMain() {
+		var updateList = dgMain.getModifiedRows().updatedRows;
+
+		$.post('/code/prop/data/write?_method=put', {
+			updateList: JSON.stringify(updateList)
+		}, function(event) {
+			if(event.result == false) {
+				switch(event.code) {
+					case -1:
+						alert('로그인이 필요합니다.');	
+						location.href='/auth/login';
+					break;
+					case -2:
+						alert('관리자만 가능합니다.');	
+					break;
+					default:
+						alert('저장에 실패하였습니다.');	
+					break;
+				}
+			} else {
+				alert('저장하였습니다.');
+				hideCancelAppendRowBtn();
+				searchMain();
+			}
+		}).fail(function() {
+			alert('저장에 실패하였습니다.');
+		});
+    }
+
+    function saveMain() {
+    	var insertList = dgMain.getModifiedRows().createdRows;
+    	var updateList = dgMain.getModifiedRows().updatedRows;
+    	
+    	if(insertList.length + updateList.length == 0) { 
+			alert('추가하거나 수정된 내용이 없습니다.');
+			return;
+		} else if(TuiGridUtility.checkEmptyDataWhenSave(dgMain, ['propInfoKey', 'dataType', 'dataRegex', 'dataRegexTag', 'dataRefObj', 'dataRefVal', 'dataInfoMessage'])) {
+			alert('빈 칸이 있습니다.');
+			return;
+		}
+		
+		var propOrderList = new Array();
+		var data = dgMain.getData();
+		if(data.length > 10) { alert('데이터는 최대 10개까지 등록가능합니다.'); return; }
+		for(var i=0;i<data.length;i++) {
+			if(propOrderList.indexOf(data[i].propOrder) != -1) { alert('데이터 순서가 중복됩니다.'); return; }
+			else if(StringUtility.checkNumber(data[i].propOrder) == false) { alert('올바른 순서를 입력하세요.'); return; }
+			else if(data[i].propOrder < 1 || data[i].propOrder > 10) { alert('1부터 10 까지 범위 내의 순서를 입력하세요.'); return; }
+
+			propOrderList.push(data[i].propOrder);
+		}
+
+		if(confirm('저장하시겠습니까?')) {
+			if(updateList.length > 0) {
+				updateMain();
+			} else {
+				insertMain();
+			}
+		}
+    }
+
+    function deleteMain() {
+		var deleteList = dgMain.getCheckedRows();
+
+		if(deleteList == null || deleteList.length == 0) { 
+			alert('삭제할 데이터를 선택하세요.');
+			return;
+		}
+			
+		if(isAppendRowMode) {
+			$.each(deleteList, function(i, iv) {
+				if(TuiGridUtility.getWhetherCreatedRows(dgMain, iv.rowKey)) {
+					dgMain.removeRow(iv.rowKey);
+				}
+			});
+		} else {
+			if(!confirm('장치 데이터를 삭제하시겠습니까?\n등록된 장치에 해당 데이터에 대한 정보를 모두 삭제합니다.\n삭제 후 복구는 불가능합니다.')) { return; }
+			if(!confirm('정말 삭제하시겠습니까? 삭제 후 복구는 불가능합니다.')) { return; }
+			if(!confirm('삭제하시겠습니까?')) { return; }
+
+			$.post('/equipment/prop/data/write/<%- codeInfo.codeKey %>?_method=delete', {
+				deleteList: JSON.stringify(deleteList)
+			}, function(event) {
+				if(event.result == false) {
+					switch(event.code) {
+						case -1:
+							alert('로그인이 필요합니다.');	
+							location.href='/auth/login';
+						break;
+						case -2:
+							alert('관리자만 가능합니다.');	
+						break;
+						default:
+							alert('삭제에 실패하였습니다.');	
+						break;
+					}
+				} else {
+					alert('삭제하였습니다.');
+					searchMain();
+				}
+			}).fail(function() {
+				alert('삭제에 실패하였습니다.');
+			});
+		}
+	}
+	
+	function moveToDetailManagePage(propInfoKey) {
+		detailManageForm.action = '/code/prop/info/view/' + propInfoKey;
+		detailManageForm.redirectUrl.value = location.pathname;
+    	detailManageForm.submit();
+	}
+
+	function moveToEquipmentList() {
+		location.href = '/equipment/type/list';
+	}
+</script>
+
+<div class="col-md-4 col-xs-12 text-left">
+	<p class=content_title>장치 명: <%- codeInfo.codeNm %></p>
+	<div class="btn-group" role="group" aria-label="...">
+		<input type="button" value="추가" onclick="appendRow();" class="btn btn-sm btn-danger" />
+		<input type="button" value="추가 취소" onclick="cancelAppendRow();" style="display:none;" id="cancelAppendRowBtn" class="btn btn-sm btn-danger"/>
+		<input type="button" value="저장" onclick="saveMain();" class="btn btn-sm btn-danger" />
+		<input type="button" value="삭제" onclick="deleteMain();" class="btn btn-sm btn-danger" />
+		<input type="button" value="목록" onclick="moveToEquipmentList();" class="btn btn-sm btn-danger" />
+	</div>
+</div>
+
+<div id="dgMain"></div>
+
+<form id="detailManageForm" method="post">
+	<input type="hidden" name="redirectUrl" id="redirectUrl" value="" />
+</form>

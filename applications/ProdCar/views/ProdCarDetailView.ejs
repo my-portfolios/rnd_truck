@@ -1,0 +1,394 @@
+<script>
+    var dgMain, dgMain1, dgMain2;
+    var basecarKey = <%- basecarKey %>;
+    var equipmentKeyArray = <%- JSON.stringify( equipmentKey ) %>;
+
+	function moveToProdCarList() {
+		location.href = '/prodcar/list';
+	}
+
+	function downloadFile(fileKey) {
+		window.open('/file/download/' + fileKey);
+    }
+    
+    $(function() {
+        dgMain = new tui.Grid({
+			el: $('#dgMain')[0],
+		    scrollX: false,
+		    scrollY: false,
+			bodyHeight: 100,
+			rowHeight: 110,
+		    columns: [
+				{
+                    header: '이미지',
+			    	name: 'thumbnail',
+                    align: 'center',
+                    width: 180,
+			    	resizable: true,
+                    sortable: true,
+                    renderer: {
+                        type: TuiGridUtility.getImageRenderer
+                    }
+				},
+			    {
+			    	header: '이름',
+			    	name: 'basecarNm',
+                    align: 'center',
+                    width: 130,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '제조회사',
+			    	name: 'basecarManuId',
+                    align: 'center',
+                    width: 140,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '모델명',
+			    	name: 'basecarModelId',
+                    align: 'center',
+                    width: 120,
+			    	resizable: true,
+			    	sortable: true
+			    },
+				{
+			    	header: '규격',
+			    	name: 'basecarStandard',
+                    align: 'center',
+                    width: 150,
+			    	resizable: true,
+			    	sortable: true
+				},
+			    {
+			    	header: '가격'
+			    	, name: 'basecarPrice'
+			    	, align: 'center'
+			    	, width: 110
+			    	, resizable: true
+			    	, sortable: true
+				},
+			    {
+			    	header: '연비'
+			    	, name: 'basecarOilRatio'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+			    	, sortable: true
+				},
+			    {
+			    	header: '제조연도'
+			    	, name: 'basecarProdDate'
+			    	, align: 'center'
+			    	, width: 90
+			    	, resizable: true
+			    	, sortable: true
+				},
+			    {
+			    	header: '상세'
+			    	, name: 'detailView'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+			    	, sortable: true
+			    	, renderer: {
+						type: CustomButtonRenderer,
+						options: {
+							dataInfo: 'basecar'
+        				}
+			    	}
+			    }
+			]
+        });
+		
+		dgMain1 = new tui.Grid({
+			el: $('#dgMain1')[0],
+		    scrollX: false,
+		    scrollY: false,
+			bodyHeight: 100,
+			rowHeight: 110,
+		    columns: [
+				{
+                    header: '이미지',
+			    	name: 'thumbnail',
+                    align: 'center',
+                    width: 180,
+			    	resizable: true,
+                    sortable: true,
+                    renderer: {
+                        type: TuiGridUtility.getImageRenderer
+                    }
+				},
+			    {
+			    	header: '벙커명',
+			    	name: 'equipNm',
+                    align: 'center',
+                    width: 130,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '제조회사',
+			    	name: 'equipManuId',
+                    align: 'center',
+                    width: 140,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '모델명',
+			    	name: 'equipModelId',
+                    align: 'center',
+                    width: 160,
+			    	resizable: true,
+			    	sortable: true
+				},
+				{
+			    	header: '규격',
+			    	name: 'propVal1',
+                    align: 'center',
+                    width: 220,
+			    	resizable: true,
+			    	sortable: true
+				},
+				{
+			    	header: '중량',
+			    	name: 'propVal2',
+                    align: 'center',
+                    width: 190,
+			    	resizable: true,
+			    	sortable: true
+				},
+			    {
+			    	header: '상세'
+			    	, name: 'detailView'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+					, sortable: true
+			    	, renderer: {
+						type: CustomButtonRenderer,
+						options: {
+							dataInfo: 'equipment'
+        				}
+			    	}
+			    }
+			]
+		});
+
+        dgMain2 = new tui.Grid({
+			el: $('#dgMain2')[0],
+		    scrollX: true,
+		    scrollY: true,
+			bodyHeight: 500,
+			rowHeight: 110,
+		    rowHeaders: ['rowNum'],
+		    columns: [
+				{
+                    header: '이미지',
+			    	name: 'thumbnail',
+                    align: 'center',
+                    width: 140,
+			    	resizable: true,
+                    sortable: true,
+                    renderer: {
+                        type: TuiGridUtility.getImageRenderer
+                    }
+				},
+			    {
+			    	header: '장치 종류',
+			    	name: 'equipType',
+                    align: 'center',
+                    width: 110,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '장치명',
+			    	name: 'equipNm',
+                    align: 'center',
+                    width: 160,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '제조회사',
+			    	name: 'equipManuId',
+                    align: 'center',
+                    width: 150,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '모델명',
+			    	name: 'equipModelId',
+                    align: 'center',
+                    width: 200,
+			    	resizable: true,
+			    	sortable: true
+				},
+				{
+			    	header: '최종수정일',
+			    	name: 'updateDt',
+                    align: 'center',
+                    width: 200,
+			    	resizable: true,
+			    	sortable: true
+				},
+			    {
+			    	header: '상세'
+			    	, name: 'detailView'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+					, sortable: true
+			    	, renderer: {
+						type: CustomButtonRenderer,
+						options: {
+							dataInfo: 'equipment'
+        				}
+			    	}
+			    }
+			]
+		});
+
+		searchMain();
+    });
+
+	function searchMain() {
+		$.get('/basecar/data/list', {
+			basecarKey: basecarKey
+		}, function(data) {
+			if(data.result != null && data.result == false) {
+				alert('베이스카 현황을 가져오는 데 실패하였습니다.');	
+			} else { dgMain.resetData(data); }
+		}).fail(function(e) {
+			alert('베이스카 현황을 가져오는 데 실패하였습니다.');
+		});
+
+		$.get('/equipment/data/list/', {
+			equipKeyArray: equipmentKeyArray
+		}, function(data) {
+			if(data.result != null && data.result == false) {
+				alert('장치 현황을 가져오는 데 실패하였습니다.');	
+			} else { 
+				var bunkerList = new Array();
+				var equipmentList = new Array();
+
+				$.each(data, function(i, iv) {
+					if(iv.codeKey == 22203) { // 벙커일 때
+						bunkerList.push(iv);
+					} else {
+						equipmentList.push(iv);
+					}
+				});
+
+				dgMain1.resetData(bunkerList); 
+				dgMain2.resetData(equipmentList); 
+			}
+		}).fail(function(e) {
+			alert('장치 현황을 가져오는 데 실패하였습니다.');
+		});
+	}
+
+    function CustomButtonRenderer(props) {
+        var el = document.createElement('input');
+        el.type = 'button';
+        this.el = el;
+		this.el.value = "상세";
+		this.el.className = "btn btn-primary";
+        this.el.onclick = function() {
+			var rowInfo = props.grid.getRow(props.rowKey);
+			moveToEditOrDetailPage(props.columnInfo.renderer.options.dataInfo, rowInfo);
+        }
+       
+      	this.getElement = function() {
+        	return this.el;
+      	};
+	}
+	
+    function moveToEditOrDetailPage(dataInfo, rowInfo) {
+		var url = '#', dataKey = -1;
+		switch(dataInfo) {
+			case 'basecar':
+				url = '/basecar/view/' + rowInfo.basecarKey;
+			break;
+			case 'equipment':
+				url = '/equipment/view/' + rowInfo.equipKey;
+			break;
+		}
+
+		location.href = url;
+    }
+
+	function deleteProdCar() {
+		var prodcarKey = '<%- prodcar.prodcarKey %>';
+
+		$.post('/prodcar/data/write/' + prodcarKey + '?_method=delete', {}, function(data) {
+			if(data.result != null && data.result == false) {
+				if(data.code == -5) {
+					alert('완성차 정보가 없습니다.');					
+					return false;
+				} else if(data.code == -6) {
+					alert('완성차를 삭제할 권한이 업습니다.');					
+					return false;
+				}
+				alert('완성차를 삭제하는데 실패하였습니다.');
+			} else { 
+				alert('완성차를 삭제하였습니다.');
+				location.href = '/prodcar/list';
+			}
+		}).fail(function(e) {
+			alert('완성차를 삭제하는데 실패하였습니다.');
+		});
+	}
+</script>
+
+ <div class="board_list"> 
+    <table>
+        <tr>
+            <th>이름</th>
+            <td><%- prodcar.prodcarNm %></td>
+        </tr>
+        <tr>
+            <th>모델명</th>
+            <td><%- prodcar.prodcarModelId %></td>
+        </tr>
+        <tr>
+            <th>제조회사</th>
+            <td><%- prodcar.prodcarManuId %></td>
+		</tr>
+		<tr>
+            <th>가격</th>
+            <td><%- prodcar.prodcarPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); %></td>
+        </tr>
+        <tr>
+            <th>베이스카 정보</th>
+            <td>
+                <div id="dgMain"></div>
+            </td>
+		</tr>
+		<tr>
+            <th>벙커 정보</th>
+            <td>
+                <div id="dgMain1"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>장치 정보</th>
+            <td>
+                <div id="dgMain2"></div>
+            </td>
+        </tr>
+    </table>
+	<p class="text-center">
+		
+		<% if(userInfo != null)
+			if(userInfo.userId == prodcar.createId || userInfo.userType == 'A') { %>
+		<input type="button" class="btn btn-primary" value="삭제" onclick="deleteProdCar();">
+		<% } %>
+    	<input type="button" class="btn btn-primary" value="목록" onclick="moveToProdCarList();">
+	</p>
+</div>

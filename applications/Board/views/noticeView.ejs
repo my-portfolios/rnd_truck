@@ -1,0 +1,105 @@
+<script>
+	$(function () {
+		$('#btn_list').click(function() {
+			$('#viewForm').attr('action', '/board/<%- noticeInfo.BOARD_TYPE%>').submit();
+		});
+
+		$('#btn_delete').click(function() {
+			if(!confirm('삭제 하시겠습니까?')) { return; }
+
+			$.ajax({
+				url: '/board/<%- noticeInfo.BOARD_TYPE%>/delete',
+				type: 'delete',
+				data: {
+					boardKey: <%- noticeInfo.BOARD_KEY%>
+				},
+				success: function (res) {
+					alert('삭제가 완료 되었습니다.');
+					location.href = '/board/<%- noticeInfo.BOARD_TYPE%>';
+				},
+				error: function (req, status, error) {
+					alert('삭제 중 오류 발생.');
+				}
+			});
+			
+		});
+
+		$('#btn_update').click(function () {
+			$('#viewForm').attr('action', '/board/<%- noticeInfo.BOARD_TYPE%>/write/<%- noticeInfo.BOARD_KEY%>').submit();
+		});
+	});
+</script>
+
+<!-- view -->
+<div class="board_list">
+<form id="viewForm" action="/board/<%- noticeInfo.BOARD_TYPE%>/view" method="POST">
+
+    <table summary="게시글의 내역에 대한 상세조회 내역을 출력합니다.">
+		<caption>게시글 상세조회</caption>
+		<colgroup>
+			<col style="width: 10%;">
+			<col style="width: 40%;">
+			<col style="width: 10%;">
+			<col style="width: 40%;">
+		</colgroup>
+		<tbody>
+			<!-- 글 제목 -->
+			<tr>
+				<th>제목</th>
+				<td colspan="3" class="left"><%- noticeInfo.BOARD_TITLE%></td>
+			</tr>
+			<!-- 작성자, 작성시각, 조회수 -->
+			<tr>
+				<th>작성자</th>
+				<td class="left">
+          <% if(noticeInfo.USER_TYPE == 'C') { %>
+            <%- noticeInfo.ENTPR_NM%>
+          <% } else { %>
+            <%- noticeInfo.USER_NICK%>
+          <% } %>
+        </td>
+				<th>등록일</th>
+				<td class="left"><%- noticeInfo.CREATE_DT%></td>				
+			</tr>
+			<!-- 게시일자 -->
+			
+			<!-- 글 내용 -->
+			<tr>
+				<th class="vtop">내용</th>
+				<td colspan="3" class="cnt">
+					<%- noticeInfo.BOARD_CONTENT%>
+				</td>
+			</tr>
+			
+			<!-- 첨부파일  -->
+			
+			<tr>
+				<th>첨부파일</th>
+				<td colspan="3">
+					<% if(noticeInfo.files != undefined) { noticeInfo.files.forEach(function(element) { %> 
+						<p>
+							<a href="/file/download/<%- element.FILE_KEY%>"><%- element.ORGIN_NAME %></a>
+						</p>
+					<% }); } %>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p class="text-center">
+		<% if( (token != undefined && token.userId == noticeInfo.CREATE_ID) || (token != undefined && token.userType === 'A')) { %>
+			<button type="button" id="btn_update" class="btn btn-danger">수정</button>
+			<button type="button" id="btn_delete" class="btn btn-danger">삭제</button>
+		<% } %>
+		<button type="button" id="btn_list" class="btn btn-primary">목록</button>
+	</p>
+	
+</form>
+
+<%# 공지사항은 댓글 보기 기능을 제공 하지 않는다. %>
+<% if(noticeInfo.BOARD_TYPE != 'notice') { %>
+<%- include (`${displayPath}/applications/Board/views/noticeReply.ejs`) %>
+<% } %>
+
+</div>
+<!-- view -->

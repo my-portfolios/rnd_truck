@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Home">  
+
+  <select id="selectHomeBoardList">
+    SELECT 
+      BOARD_KEY, 
+      BOARD_TITLE, 
+      DATE_FORMAT(CREATE_DT, '%Y-%m-%d') AS CREATE_DT
+    FROM 
+      BOARD 
+    WHERE 
+      BOARD_TYPE = #{BOARD_TYPE}
+    ORDER BY 
+      CREATE_DT DESC 
+    LIMIT 6
+  </select>
+
+  <select id="selectSearchResult">
+    SELECT 
+      BOARD_KEY, 
+      BOARD_TITLE, 
+      DATE_FORMAT(CREATE_DT, '%Y-%m-%d') AS CREATE_DT
+    FROM 
+      BOARD 
+    <where>
+      AND BOARD_TYPE = #{BOARD_TYPE}
+      <if test="keyword != null and keyword != ''">
+        AND BOARD_TITLE LIKE CONCAT ('%', #{keyword}, '%')
+      </if>
+    </where>
+    ORDER BY 
+      CREATE_DT DESC 
+    LIMIT 6
+  </select>
+
+  <select id="selectEquipSearchResult">
+    SELECT
+      T1.*, 
+      T2.FILE_KEY
+    FROM
+      EQUIP T1
+      LEFT JOIN
+      (SELECT * FROM FILE WHERE USE_TYPE = 'EQUIP' AND FILE_DESC = 'thumbnail') T2
+      ON T1.EQUIP_KEY = T2.USE_VAL
+    WHERE
+      EQUIP_NM LIKE CONCAT('%', #{keyword}, '%')
+  </select>
+
+  <select id="selectBasecarSearchResult">
+    SELECT
+      T1.*, 
+      T2.FILE_KEY
+    FROM
+      BASE_CAR T1
+      LEFT JOIN
+      (SELECT * FROM FILE WHERE USE_TYPE = 'BASECAR' AND FILE_DESC = 'thumbnail') T2
+      ON T1.BASECAR_KEY = T2.USE_VAL
+    WHERE
+      BASECAR_NM LIKE CONCAT('%', #{keyword}, '%')
+  </select>
+
+  <select id="selectProdcarSearchResult">
+    SELECT
+      T1.*, 
+      T2.FILE_KEY
+    FROM
+      PROD_CAR T1
+      LEFT JOIN
+      (SELECT * FROM FILE WHERE USE_TYPE = 'PRODCAR' AND FILE_DESC = 'thumbnail') T2
+      ON T1.PRODCAR_KEY = T2.USE_VAL
+    WHERE
+      PRODCAR_NM LIKE CONCAT('%', #{keyword}, '%')
+  </select>
+
+  <select id="selectListestList">
+    WITH EQUIPDATA AS (
+      SELECT 
+        'EQUIP' AS DATA_TYPE, EQUIP_KEY AS DATA_KEY, EQUIP_NM AS NAME, EQUIP_MODEL_ID AS MODEL, CREATE_DT 
+      FROM EQUIP ORDER BY CREATE_DT DESC LIMIT 6
+    ), BASECARDATA AS (
+      SELECT 
+        'BASECAR' AS DATA_TYPE, BASECAR_KEY AS DATA_KEY, BASECAR_NM AS NAME, BASECAR_MODEL_ID AS MODEL, CREATE_DT 
+      FROM BASE_CAR	ORDER BY CREATE_DT DESC	LIMIT 6
+    ), PRODCARDATA AS (
+      SELECT
+        'PRODCAR' AS DATA_TYPE, PRODCAR_KEY AS DATA_KEY, PRODCAR_NM AS NAME, '' AS MODEL, CREATE_DT
+      FROM PROD_CAR ORDER BY CREATE_DT DESC LIMIT 6
+    ), ALLDATA AS (
+      SELECT * FROM EQUIPDATA
+      UNION ALL
+      SELECT * FROM BASECARDATA
+      
+    )
+    SELECT
+      DATA_TYPE, 
+      DATA_KEY, 
+      NAME, 
+      MODEL, 
+      DATE_FORMAT(CREATE_DT, '%Y-%m-%d') AS CREATE_DT
+    FROM
+      ALLDATA
+    ORDER BY
+      CREATE_DT DESC
+    LIMIT 6
+  </select>
+  
+</mapper>

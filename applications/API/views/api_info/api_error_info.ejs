@@ -1,0 +1,84 @@
+<div class="text-left"><p class="content_title"> Response: Fail</p></div>
+<div class="board_list">
+	<table class="table text-center">
+		<thead>
+			<tr>
+			<th>필드</th>
+			<th>설명</th>
+			<th>타입</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>DATA.RESULT</td>
+				<td>API 요청에 대한 결과</td>
+				<td>boolean</td>
+			</tr>
+			<tr>
+				<td>DATA.MESSAGE</td>
+				<td>요청 실패에 대한 원인 메시지</td>
+				<td>string</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="text-left"><p class="content_title"> 오류 메시지 설명</p></div>
+<div class="board_list">
+	<table class="table text-center">
+		<thead>
+			<tr>
+				<th>HTTP 상태 코드</th>
+				<th>메시지</th>
+				<th>설명</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>401</td>
+				<td>API AUTHORIZATION KEY IS EMPTY</td>
+				<td>API 키를 포함하지 않고 요청함</td>
+			</tr>
+			<tr>
+				<td>403</td>
+				<td>NOT ALLOWED TYPE CURRENT API KEY</td>
+				<td>신청 시 사용 범위에 포함되지 않은 API를 호출하려 함</td>
+			</tr>
+			<tr>
+				<td>403</td>
+				<td>NOT AUTHORIZED TO ACCESS API</td>
+				<td>승인되지 않았거나 API 키 정보가 없음</td>
+			</tr>
+			<tr>
+				<td>500</td>
+				<td>API SERVICE OCCURED ERROR. PLEASE TRY AGAIN.</td>
+				<td>API 서비스에서 오류 발생. 일정시간 뒤 재시도 필요</td>
+			</tr>
+			<tr>
+				<td>400</td>
+				<td>INVALID PARAMETER</td>
+				<td>필수 파라미터가 존재하지 않음</td>
+			</tr>
+			<tr>
+				<td>200</td>
+				<td>NOT FOUND DATA</td>
+				<td>존재하지 않은 데이터를 수정, 삭제하려 함</td>
+			</tr>
+			<tr>
+				<td>403</td>
+				<td>PERMISSION DENIED</td>
+				<td>본인이 등록하지 않은 데이터를 수정, 삭제하려함</td>
+			</tr>
+			<tr>
+				<td>200</td>
+				<td>ACCOUNT INFORAMTION IS INVALID</td>
+				<td>로그인 정보가 올바르지 않음</td>
+			</tr>
+			<tr>
+				<td>200</td>
+				<td>DISABLED ACCOUNT</td>
+				<td>활성되지 않은 계정</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

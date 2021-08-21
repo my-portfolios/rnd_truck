@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>캠핑카 포털</title>
+		<%- include (`../layout/home/proc.ejs`) %>
+		<script language="javascript">
+			function fncGoAfterErrorPage(){
+				history.back(-2);
+			}
+		</script>
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="container">
+				<div class="error_box"  style="margin: 5% auto;">
+					<p class="title">HTTP 500 Error</p>
+					<p>웹 페이지에 오류가 발생하였습니다.<br /> <br /></p>
+					<input type="button" onclick="fncGoAfterErrorPage();" value="이전 페이지">
+				</div>
+				<pre><%= stack %></pre> 
+			</div>
+		</div>
+	</body>
+</html>
+

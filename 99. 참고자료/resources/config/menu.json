@@ -1,0 +1,400 @@
+[
+	{
+		"name": "HOME",
+		"options": { "show": true, "use": true },
+		"childMenus": [
+			{
+				"name": "장치 및 베이스카현황",
+				"options": { "show": true, "use": true },
+				"childMenus": [
+					{
+						"name": "장치 현황", 
+						"request": {"url": "/equipment/list", "method": "GET"},
+						"options": { "show": true, "use": true },
+						"childMenus": [
+							{
+								"name": "장치 상세", 
+								"request": {"url": "/equipment/view/:equipKey", "method": "GET"},
+								"options": { "show": true, "use": true }
+							}
+						]
+					},
+					{
+						"name": "장치 등록", 
+						"options": { "show": false, "use": true },
+						"childMenus": [
+							{
+								"name": "장치 선택", 
+								"request": {"url": "/equipment/write/step1", "method": "GET"},
+								"options": { "show": true, "use": true }
+							},
+							{
+								"name": "장치 정보 입력", 
+								"request": {"url": "/equipment/write/step2", "method": "POST"},
+								"options": { "show": true, "use": true }
+							}
+						]
+					},
+					{
+						"name": "장치 분류 관리", 
+						"request": {"url": "/equipment/type/list", "method": "GET"},
+						"options": { "show": false, "use": true },
+						"childMenus": [
+							{
+								"name": "장치 데이터 관리", 
+								"request": {"url": "/equipment/prop/write/:codeKey", "method": "POST"},
+								"options": { "show": false, "use": true }
+							},
+							{
+								"name": "데이터 정의", 
+								"request": {"url": "/code/prop/info/view/:propInfoKey", "method": "POST"},
+								"options": { "show": false, "use": true }
+							}
+						]
+					},
+					{
+						"name": "베이스카 현황", 
+						"request": {"url": "/basecar/list", "method": "GET"},
+						"options": { "show": true, "use": true },
+						"childMenus": [
+							{
+								"name": "베이스카 상세", 
+								"request": {"url": "/basecar/view/:basecarKey", "method": "GET"},
+								"options": { "show": true, "use": true }
+							},
+							{
+								"name": "베이스카 등록", 
+								"request": {"url": "/basecar/write", "method": "GET"},
+								"options": { "show": false, "use": true }
+							}
+						]
+					},
+					{
+						"name": "완성차 현황", 
+						"request": {"url": "/prodcar/list", "method": "GET"},
+						"options": { "show": true, "use": true },
+						"childMenus": [
+							{
+								"name": "완성차 상세", 
+								"request": {"url": "/prodcar/view/:prodcarKey", "method": "GET"},
+								"options": { "show": true, "use": true }
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "API 신청",
+				"options": { "show": true, "use": true },
+				"childMenus": [
+					{
+						"name": "API 소개", 
+						"request": {"url": "/openapi/info", "method": "GET"},
+						"options": { "show": true, "use": true }
+					},
+					{
+						"name": "API 요청가이드", 
+						"request": {"url": "/openapi/info/request", "method": "GET"},
+						"options": { "show": true, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/basecar/select", "method": "GET"},
+						"options": { "show": true, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/equipment/select", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/equipment/type/select", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/prodcar/select", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/prodcar/insert", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/prodcar/update", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/prodcar/delete", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 데이터 소개", 
+						"request": {"url": "/openapi/info/user/select", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "API 신청", 
+						"request": {"url": "/openapi/apply", "method": "GET"},
+						"options": { "show": true, "use": true },
+						"childMenus": [
+							{
+								"name": "API 신청 결과", 
+								"request": {"url": "/openapi/genKeysView", "method": "POST"},
+								"options": { "show": false, "use": true }
+							},
+							{
+								"name": "API 재발급", 
+								"request": {"url": "/openapi/reGenKeys", "method": "GET"},
+								"options": { "show": false, "use": true }
+							},
+							{
+								"name": "API 재발급", 
+								"request": {"url": "/openapi/reGenKeys", "method": "POST"},
+								"options": { "show": false, "use": true }
+							}
+						]
+					},
+					{
+						"name": "API 신청 현황", 
+						"request": {"url": "/openapi/list", "method": "GET"},
+						"options": { "show": true, "use": true }
+					}
+				]
+			},
+			{
+				"name": "다운로드",
+				"request": {"url": "/data", "method": "GET"},
+				"options": { "show": true, "use": true },
+				"childMenus": [
+					{
+						"name": "다운로드", 
+						"request": {"url": "/data", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "다운로드", 
+						"request": {"url": "/data/page/:pageNum", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "다운로드", 
+						"request": {"url": "/data", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "다운로드",
+						"request": {"url": "/data/page/:pageNum", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "다운로드", 
+						"request": {"url": "/data/view", "method": "GET"},
+						"options": { "show": false, "use": true },
+						"childMenus": [
+							{
+								"name": "다운로드", 
+								"request": {"url": "/data/view/:DATAUSE_KEY", "method": "GET"},
+								"options": { "show": false, "use": true }
+							}
+						]
+					},
+					{
+						"name": "등록", 
+						"request": {"url": "/data/write", "method": "GET"},
+						"options": { "show": false, "use": true },
+						"childMenus": [
+							{
+								"name": "등록", 
+								"request": {"url": "/data/write/:DATAUSE_KEY", "method": "POST"},
+								"options": { "show": false, "use": true }
+							},
+							{
+								"name": "등록", 
+								"request": {"url": "/data/write/:DATAUSE_KEY", "method": "POST"},
+								"options": { "show": false, "use": true }
+							},
+							{
+								"name": "수정", 
+								"request": {"url": "/data/write/:DATAUSE_KEY", "method": "GET"},
+								"options": { "show": false, "use": true }
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "공지사항",
+				"request": {"url": "/board/notice", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "공지사항",
+				"request": {"url": "/board/notice/page/:pageNum", "method": "GET"},
+				"options": { "show": false, "use": true }
+			},
+			{
+				"name": "공지사항",
+				"request": {"url": "/board/notice", "method": "POST"},
+				"options": { "show": false, "use": true },
+				"childMenus": [
+					{
+						"name": "공지사항 등록",
+						"request": {"url": "/board/notice/write", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "공지사항 수정",
+						"request": {"url": "/board/notice/write/:BOARD_KEY", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "공지사항 보기",
+						"request": {"url": "/board/notice/view", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "공지사항 보기",
+						"request": {"url": "/board/notice/view", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "공지사항 보기",
+						"request": {"url": "/board/notice/view/:BOARD_KEY", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "공지사항 보기",
+						"request": {"url": "/board/notice/view/:BOARD_KEY", "method": "POST"},
+						"options": { "show": false, "use": true }
+					}
+				]
+			},
+			{
+				"name": "자유게시판",
+				"request": {"url": "/board/freeBoard", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "자유게시판",
+				"request": {"url": "/board/freeBoard/page/:pageNum", "method": "GET"},
+				"options": { "show": false, "use": true }
+			},
+			{
+				"name": "자유게시판",
+				"request": {"url": "/board/freeBoard", "method": "POST"},
+				"options": { "show": false, "use": true },
+				"childMenus": [
+					{
+						"name": "자유게시판 등록",
+						"request": {"url": "/board/freeBoard/write", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "자유게시판 수정",
+						"request": {"url": "/board/freeBoard/write/:BOARD_KEY", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "자유게시판 보기",
+						"request": {"url": "/board/freeBoard/view", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "자유게시판 보기",
+						"request": {"url": "/board/freeBoard/view", "method": "POST"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "자유게시판 보기",
+						"request": {"url": "/board/freeBoard/view/:BOARD_KEY", "method": "GET"},
+						"options": { "show": false, "use": true }
+					},
+					{
+						"name": "자유게시판 보기",
+						"request": {"url": "/board/freeBoard/view/:BOARD_KEY", "method": "POST"},
+						"options": { "show": false, "use": true }
+					}
+				]
+      },
+      {
+        "name": "캠핑 정보",
+        "options": { "show": false, "use": true },
+        "childMenus": [
+          {
+            "name": "캠핑장 보기",
+            "request": { "url": "/campsite", "method": "GET" },
+            "options": { "show": true, "use": true }
+          }
+        ]
+      }
+		]
+	},
+	{
+		"name": "회원",
+		"options": { "show": true, "use": true },
+		"childMenus": [
+			{
+				"name": "로그인",
+				"request": {"url": "/auth/login", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "회원가입",
+				"request": {"url": "/auth/join", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "정보 입력",
+				"request": {"url": "/auth/joinUserView", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "정보 입력",
+				"request": {"url": "/auth/joinEnterpriseView", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "정보 수정",
+				"request": {"url": "/user/userInfo", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "정보 수정",
+				"request": {"url": "/user/entprInfo", "method": "GET"},
+				"options": { "show": true, "use": true }
+			},
+			{
+				"name": "회원 현황",
+				"request": {"url": "/user/userList", "method": "GET"},
+				"options": { "show": true, "use": true }
+			}
+		]
+	},
+	{
+		"name": "통합 검색",
+		"options": { "show": true, "use": true },
+		"childMenus": [
+			{
+				"name": "통합 검색 결과", 
+				"request": { "url": "/search/result/:keyword", "method": "POST" },
+				"options": { "show": false, "use": true }
+			}
+		]
+	},
+	{
+		"name": "캠핑카포털 정책",
+		"options": { "show": false, "use": true },
+		"childMenus": [
+			{
+				"name": "개인정보 처리방침", 
+				"request": {"url": "/home/policy", "method": "GET"},
+				"options": { "show": true, "use": true }
+			}
+		]
+	}
+]

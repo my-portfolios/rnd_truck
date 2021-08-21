@@ -1,0 +1,168 @@
+<% let fileDescOption = {object3d: '3D 오브젝트', material: '메테리얼 파일', normalMap: '노멀맵', thumbnail: '썸네일', texture: '텍스처', metallic: '메탈릭/스펙큘러'}; 
+   let materialFileDescArray = ["material", "normalMap", "thumbnail", "texture", "metallic"];
+   let fileDescExt = {object3d: ['obj', 'fbx'], material: ['mat', 'mtl'], normalMap: ['jpg', 'png'], thumbnail: ['jpg', 'png'], texture: ['jpg', 'png'], metallic: ['jpg', 'png']};
+   let setMaterialObject = new Object();
+   let setObject3dObject = new Object();
+%>
+<script src="/assets/js/camping/Equipment.js"></script>
+<script>
+	var propInfo = <%- JSON.stringify(propInfo) %>;
+	var equipment = <%- JSON.stringify(equipment) %>;
+	$(function() {
+		initialSetDataValue();
+	});
+
+	function initialSetDataValue() {
+		propInfo.forEach(function(iv, i) {
+			var id = 'propVal' + iv.propOrder;
+			var value = equipment[id];
+
+			Equipment.initialSetDataValue($("#" + id), iv, value);
+		});
+	}
+
+	function moveToEquipmentList() {
+		location.href = '/equipment/list';
+	}
+
+	function downloadFile(fileKey) {
+		window.open('/file/download/' + fileKey);
+	}
+</script>
+
+
+ <div class="board_list"> 
+    <table>
+        <tr>
+            <th>장치 분류</th>
+            <td><%- codeInfo.codeNm %></td>
+        </tr>
+        <tr>
+            <th>이름</th>
+            <td><%- equipment.equipNm %></td>
+        </tr>
+        <tr>
+            <th>모델명</th>
+            <td><%- equipment.equipModelId %></td>
+        </tr>
+        <tr>
+            <th>제조회사</th>
+            <td><%- equipment.equipManuId %></td>
+        </tr>
+        <% for(var i=0;i<propInfo.length;i++) {
+            let prop = propInfo[i]; 
+            if(prop == null || prop.useYn != 'Y') { continue; }
+            %>
+            <tr>
+                <th><%- prop.propName %></th>
+                <td>
+                    <%  let propDataName = 'propVal' + prop.propOrder;
+                        switch(prop.dataType) { 
+                        case "STRING": case "NUMBER": case "INTEGER": case "FLOAT": case "CUSTOM": %>
+                            <span><%- equipment[propDataName] %></span>
+                        <% break; %>
+                        <% case "DATA": %>
+							<select id="<%- propDataName %>" multiple="multiple" style="height: 150px;" disabled="disabled"></select>
+                        <% break; %>
+                    <% } %>
+                </td>
+            </tr>
+        <% } %>
+        <tr>
+            <th>3D 오브젝트</th>
+            <td>
+                <table>
+                    <tr>
+                        <th>오브젝트명</th>
+                        <th>파일명</th>
+                    </tr>
+                    
+                    <% if(object3dFile != null && object3dFile.length > 0) {
+                        for(var i=0;i<object3dFile.length;i++) {
+                            let uniqueKey = Buffer.from(object3dFile[i].remark, "utf8").toString('base64');
+                            if(setObject3dObject[uniqueKey] == null) { setObject3dObject[uniqueKey] = new Object(); }
+                            setObject3dObject[uniqueKey].name = object3dFile[i].remark;
+                            if( setObject3dObject[uniqueKey].files == null) { setObject3dObject[uniqueKey].files = new Object(); }
+                            setObject3dObject[uniqueKey].files[object3dFile[i].fileDesc] = object3dFile[i];
+                        }
+                    
+                        let setObject3dObjectKeys = Object.keys(setObject3dObject);
+                        for(var i=0;i<setObject3dObjectKeys.length;i++) { 
+                            let setObject = setObject3dObject[setObject3dObjectKeys[i]].files;
+                            let setObjectKeys = Object.keys(setObject); %>
+                            <tr class="object3d_<%- setObject3dObjectKeys[i] %>">
+                                <td>
+                                    <span class="object3d_set_name_view" hbz-file-id="<%- setObject3dObjectKeys[i] %>"><%- setObject3dObject[setObject3dObjectKeys[i]].name %></span>
+                                    <input class="object3d_set_name_input" hbz-file-id="<%- setObject3dObjectKeys[i] %>"="<%- setObject3dObjectKeys[i] %>" type="text" style="display:none"/>
+                                </td>
+                                <td> 
+                                    <a href="javascript:downloadFile('<%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.fileKey %>');" hbz-file-id="<%- setObject3dObjectKeys[i] %>" hbz-file-desc="<%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.fileDesc %>" class="fileDownloadView"><%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.orginName %></a>
+                                </td>
+                            </tr>
+                            <%    
+                        }
+                    } else { %>
+                        <tr>
+                            <td colspan="3">파일이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </table>
+            </td>
+        </tr>
+        <tr> 
+            <th>재질</th>
+            <td>
+                <table>
+                    <% 
+                    if(materialFile != null && materialFile.length > 0) {
+                        for(var i=0;i<materialFile.length;i++) {
+                            let uniqueKey = Buffer.from(materialFile[i].remark, "utf8").toString('base64');
+                            if(setMaterialObject[uniqueKey] == null) { setMaterialObject[uniqueKey] = new Object(); }
+                            setMaterialObject[uniqueKey].name = materialFile[i].remark;
+                            if( setMaterialObject[uniqueKey].files == null) { setMaterialObject[uniqueKey].files = new Object(); }
+                            setMaterialObject[uniqueKey].files[materialFile[i].fileDesc] = materialFile[i];
+                        }
+                    
+                        let setMaterialObjectKeys = Object.keys(setMaterialObject);
+                        for(var i=0;i<setMaterialObjectKeys.length;i++) { 
+                            let setMaterial = setMaterialObject[setMaterialObjectKeys[i]].files;
+                            let setMaterialKeys = Object.keys(setMaterial); %>
+                            <tr class="material_<%- setMaterialObjectKeys[i] %>">
+                                <th>세트명</th>
+                                <th>
+                                    <span class="material_set_name_view" hbz-file-id="<%- setMaterialObjectKeys[i] %>"><%- setMaterialObject[setMaterialObjectKeys[i]].name %></span>
+                                    <input class="material_set_name_input" hbz-file-id="<%- setMaterialObjectKeys[i] %>"="<%- setMaterialObjectKeys[i] %>" type="text" style="display:none"/>
+                                </th>
+                            </tr>
+                        <%
+                            for(var j=0;j<materialFileDescArray.length;j++) { 
+                                let file = null; %>
+                                <tr class="material_<%- setMaterialObjectKeys[i] %>">
+                                    <td><%- fileDescOption[materialFileDescArray[j]] %></td>
+                                    <% for(var k=0;k<setMaterialKeys.length;k++) { 
+                                        if(setMaterialKeys[k] == materialFileDescArray[j]) { 
+                                            file = setMaterial[setMaterialKeys[k]];
+                                        }
+                                    } %>
+                                    <td> 
+                                        <% if(file != null) { %>
+                                            <a href="javascript:downloadFile('<%- file.fileKey %>');" hbz-file-id="<%- setMaterialObjectKeys[i] %>" hbz-file-desc="<%- file.fileDesc %>" class="fileDownloadView"><%- file.orginName %></a>
+                                        <% } else { %> 
+                                            <span hbz-file-id="<%- setMaterialObjectKeys[i] %>" hbz-file-desc="<%- materialFileDescArray[j] %>" class="fileNameView">파일정보 없음</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <%    
+                            }
+                        }
+                    } else { %>
+                        <tr>
+                            <td colspan="3">파일이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </table>
+            </td>
+        </tr>
+</table>
+    <p class="text-center"><input type="button" class="btn btn-info" value="목록" onclick="moveToEquipmentList();"></p>
+</div>

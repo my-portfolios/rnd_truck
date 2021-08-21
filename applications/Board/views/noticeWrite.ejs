@@ -1,0 +1,115 @@
+<script type="text/javascript" src="/assets/smarteditor2-2.9.2/js/service/HuskyEZCreator.js" charset="utf-8"></script>
+
+<script>
+    $(function () {
+        var oEditors = [];
+        nhn.husky.EZCreator.createInIFrame({
+            oAppRef: oEditors,
+            elPlaceHolder: "ir1",
+            sSkinURI: "/assets/smarteditor2-2.9.2/SmartEditor2Skin.html",
+            htParams : {
+                bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+                bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+                bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+                //bSkipXssFilter : true,		// client-side xss filter 무시 여부 (true:사용하지 않음 / 그외:사용)
+                //aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
+                fOnBeforeUnload : function(){
+                    //alert("완료!");
+                },
+                I18N_LOCALE : 'ko_KR'
+            }, //boolean
+            fOnAppLoad : function(){
+                //예제 코드
+                <% if(mode == 'update') { %>
+                oEditors.getById["ir1"].exec("PASTE_HTML", ['<%- BOARD_CONTENT%>']);
+                <% } %>
+            },
+            fCreator: "createSEditor2"
+        });
+
+        function updateBoardContent() {
+            oEditors.getById['ir1'].exec('UPDATE_CONTENTS_FIELD', []);  // 에디터의 내용이 textarea에 적용됨
+        }
+
+        $('#btn_insertNotice').click(function () {
+            // smartEditor content 적용
+            updateBoardContent();
+            $('#insertForm').submit();
+        });
+
+        $('#btn_listView').click(function () {
+            $('#insertForm').attr('action', '/board/notice').submit();
+        });
+
+        $('[name=btn_deleteFile]').click(function (e) {
+            let fileKey = $(this).attr('file_key');
+            $.post('/file/delete/' + fileKey + '?_method=delete', {}, function (res) {
+
+                if(!res.result) {
+                    alert('파일 삭제 중 이상 발생');
+                    return;
+                }
+
+                $('#' + fileKey).remove();
+            }).fail(function () {
+                alert('파일 삭제 중 오류 발생');
+            });
+        });
+
+        $('#btn_update').click(function (e) {
+            // smartEditor content 적용
+            updateBoardContent();
+
+            $('#insertForm').attr('action', '/board/<%- BOARD_TYPE%>/update/' + $('#boardKey').val() + '?_method=put').submit();
+        });
+    });
+
+</script>
+
+<form id="insertForm" action="/board/<%- BOARD_TYPE%>/insert" method="POST" enctype="multipart/form-data">
+    <% if(mode == 'update') { %>
+        <input type="hidden" id="boardKey" name="BOARD_KEY" value="<%- BOARD_KEY%>">
+    <% } %>
+    <input type="hidden" name="BOARD_TYPE" value="<%- BOARD_TYPE%>">
+    <div class="board_list"> 
+        <table>
+            <tr>
+                <th>제목 <span class="pilsu">*</span></th>
+                <td>
+                    <% if(mode == 'update') { %>
+                        <input type="text" name="BOARD_TITLE" maxlength="100" placeholder="제목을 입력해 주세요." value="<%- BOARD_TITLE%>">
+                    <% } else { %> 
+                        <input type="text" name="BOARD_TITLE" maxlength="100" placeholder="제목을 입력해 주세요." value="">
+                    <% } %>
+                </td>
+            </tr>
+            <tr>
+                <th>내용 <span class="pilsu">*</span></th>
+                <td>
+                    <textarea id="ir1" name="BOARD_CONTENT" cols="120" rows="15"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <th>첨부파일 추가</th>
+                <td>
+                    <p><input type="file" id="file" name="boardFile" title="첨부파일" multiple></p>
+                    <% if(mode == 'update' && files != undefined) { files.forEach(function(element) { %> 
+                        <div id="<%- element.FILE_KEY%>">
+                            <input type="hidden" name="FILE_KEY" value="<%- element.FILE_KEY%>">
+                            <a href="/file/download/<%- element.FILE_KEY%>"><%- element.ORGIN_NAME %></a>
+                            <button type="button" name="btn_deleteFile" class="btn btn-danger btn-xs" file_key="<%- element.FILE_KEY%>">삭제</button>
+						</div>
+					<% }); } %>
+                </td>
+            </tr>
+        </table>
+        <p class="text-center">	
+            <% if(mode == 'update') { %>
+                <button id="btn_update" type="button" class="btn btn-danger">수정</button>
+            <% } else { %>
+                <button id="btn_insertNotice" type="button" class="btn btn-danger">등록</button>
+            <% } %>
+            <button id="btn_listView" type="button" class="btn btn-primary" >목록</button>
+        </p>
+    </div>
+</form>

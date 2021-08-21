@@ -1,0 +1,181 @@
+<script src="/assets/js/fileUpload/upload.js" ></script>
+<script>
+	var parentElId = '';
+	var fileUploadName1 = 'material';
+	var fileUploadName2 = 'normalMap';
+	var fileUploadName3 = 'thumbnail';
+	var fileUploadName4 = 'texture';
+	var fileUploadName5 = 'metallic';
+	var availableFileExt1 = ['mat', 'mtl'];
+	var availableFileExt2 = ['jpg', 'png'];
+	var availableFileExt3 = ['jpg', 'png'];
+	var availableFileExt4 = ['jpg', 'png'];
+	var availableFileExt5 = ['jpg', 'png'];
+
+	var fileUploader = new ForwardFileUploader({});
+	if(availableFileExt1 != null) { availableFileExt1.forEach(function(ext, index) { availableFileExt1[index] = ext.toUpperCase(); }); }
+	if(availableFileExt2 != null) { availableFileExt2.forEach(function(ext, index) { availableFileExt2[index] = ext.toUpperCase(); }); }
+	if(availableFileExt3 != null) { availableFileExt3.forEach(function(ext, index) { availableFileExt3[index] = ext.toUpperCase(); }); }
+	if(availableFileExt4 != null) { availableFileExt4.forEach(function(ext, index) { availableFileExt4[index] = ext.toUpperCase(); }); }
+	if(availableFileExt5 != null) { availableFileExt5.forEach(function(ext, index) { availableFileExt5[index] = ext.toUpperCase(); }); }
+
+	function creationComplete(elId) {
+		parentElId = elId;
+		$("#file1").attr('accept', availableFileExt1.map(function(data) { return '.' + data; }));
+		$("#file2").attr('accept', availableFileExt2.map(function(data) { return '.' + data; }));
+		$("#file3").attr('accept', availableFileExt3.map(function(data) { return '.' + data; }));
+		$("#file4").attr('accept', availableFileExt4.map(function(data) { return '.' + data; }));
+		$("#file5").attr('accept', availableFileExt5.map(function(data) { return '.' + data; }));
+	}
+
+	function uploadFile() {
+		var file1 = $("#file1").clone();
+		var file2 = $("#file2").clone();
+		var file3 = $("#file3").clone();
+		var file4 = $("#file4").clone();
+		var file5 = $("#file5").clone();
+		var fileRemark = $("#fileRemark").val();
+
+		var fileInfo1 = { isExist: fileUploader.checkExistFile($(file1)[0]), fileName: fileUploader.getFileName($(file1)[0]), fileExt: fileUploader.getFileExt($(file1)[0]) };
+		var fileInfo2 = { isExist: fileUploader.checkExistFile($(file2)[0]), fileName: fileUploader.getFileName($(file2)[0]), fileExt: fileUploader.getFileExt($(file2)[0]) };
+		var fileInfo3 = { isExist: fileUploader.checkExistFile($(file3)[0]), fileName: fileUploader.getFileName($(file3)[0]), fileExt: fileUploader.getFileExt($(file3)[0]) };
+		var fileInfo4 = { isExist: fileUploader.checkExistFile($(file4)[0]), fileName: fileUploader.getFileName($(file4)[0]), fileExt: fileUploader.getFileExt($(file4)[0]) };
+		var fileInfo5 = { isExist: fileUploader.checkExistFile($(file5)[0]), fileName: fileUploader.getFileName($(file5)[0]), fileExt: fileUploader.getFileExt($(file5)[0]) };
+
+		$(file1).attr('class', fileUploadName1 + '_' + fileRemark); 
+		$(file2).attr('class', fileUploadName1 + '_' + fileRemark); 
+		$(file3).attr('class', fileUploadName1 + '_' + fileRemark); 
+		$(file4).attr('class', fileUploadName1 + '_' + fileRemark); 
+		$(file5).attr('class', fileUploadName1 + '_' + fileRemark); 
+		$(file1).attr('name', fileUploadName1 + '_File_'+fileRemark); $(file1).css('display', 'none');
+		$(file2).attr('name', fileUploadName2 + '_File_'+fileRemark); $(file2).css('display', 'none');
+		$(file3).attr('name', fileUploadName3 + '_File_'+fileRemark); $(file3).css('display', 'none');
+		$(file4).attr('name', fileUploadName4 + '_File_'+fileRemark); $(file4).css('display', 'none');
+		$(file5).attr('name', fileUploadName5 + '_File_'+fileRemark); $(file5).css('display', 'none');
+
+		if(fileRemark == "") {
+			alert('재질 명칭을 입력하세요.')
+			return;
+		} else if(fileRemark.length >= 20) {
+			alert('재질 명칭은 20자 까지 입력 가능합니다.')
+			return;
+		} else if($(file1).val() == '') {
+			alert('메테리얼 파일을 등록하세요.')
+			return;
+		} else if(availableFileExt1.indexOf( fileInfo1.fileExt ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt1).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(fileInfo2.isExist && availableFileExt2.indexOf( fileInfo2.fileExt ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt2).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(fileInfo3.isExist && availableFileExt3.indexOf( fileInfo3.fileExt ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt3).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(fileInfo4.isExist && availableFileExt4.indexOf( fileInfo4.fileExt ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt4).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(fileInfo5.isExist && availableFileExt5.indexOf( fileInfo5.fileExt ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt5).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(parent.materialSetArray.indexOf(fileRemark) != -1) {
+			alert( '메테리얼 세트 이름이 중복됩니다.');
+			return;
+		}
+
+		var tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+		var td = $('<td>');
+
+		/* 세트명, 삭제 버튼 */
+		td.append($('<span>', {text: fileRemark}));
+		tr.append(td);
+
+		td = $('<td>');
+		td.append($('<input>', {type: 'button', value: '삭제', 'hbz-data-desc': 'material', 'hbz-data-remark': fileRemark, 'hbz-data-name': fileUploadName1+'_'+fileRemark, onclick: 'removeNewFile(this);' }));
+		tr.append(td);
+		$('#'+parentElId, parent.document).append(tr);
+	
+		$('#'+parentElId, parent.document).append($("<input>", {type: 'hidden', class: fileUploadName1 + '_' + fileRemark, name: fileUploadName1 + '_Remark_'+fileRemark, value: fileRemark}));
+		/* 파일 이름 */
+		if(fileInfo1.isExist) {
+			tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+			td = $('<td colspan="2">');
+			tr.append($('<td>', {text: '메테리얼 파일'}));
+			tr.append($('<td>', {text: fileInfo1.fileName}));
+
+			$('#'+parentElId, parent.document).append(tr);
+			$('#'+parentElId, parent.document).append(file1);
+			parent.fileCnt[fileUploadName1]++;
+		}
+		if(fileInfo2.isExist) {
+			tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+			tr.append($('<td>', {text: '노멀맵'}));
+			tr.append($('<td>', {text: fileInfo2.fileName}));
+
+			$('#'+parentElId, parent.document).append(tr);
+			$('#'+parentElId, parent.document).append(file2);
+			parent.fileCnt[fileUploadName2]++;
+		}
+		if(fileInfo3.isExist) {
+			tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+			tr.append($('<td>', {text: '썸네일'}));
+			tr.append($('<td>', {text: fileInfo3.fileName}));
+
+			$('#'+parentElId, parent.document).append(tr);
+			$('#'+parentElId, parent.document).append(file3);
+			parent.fileCnt[fileUploadName3]++;
+		}
+		if(fileInfo4.isExist) {
+			tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+			tr.append($('<td>', {text: '텍스처'}));
+			tr.append($('<td>', {text: fileInfo4.fileName}));
+
+			$('#'+parentElId, parent.document).append(tr);
+			$('#'+parentElId, parent.document).append(file4);
+			parent.fileCnt[fileUploadName4]++;
+		}
+		if(fileInfo5.isExist) {
+			tr = $('<tr>', {class: fileUploadName1 + '_' + fileRemark});
+			tr.append($('<td>', {text: '텍스처'}));
+			tr.append($('<td>', {text: fileInfo5.fileName}));
+
+			$('#'+parentElId, parent.document).append(tr);
+			$('#'+parentElId, parent.document).append(file5);
+			parent.fileCnt[fileUploadName5]++;
+		}
+
+		parent.materialSetArray.push(fileRemark);
+		if(parent.reloadComboboxMaterialDefaultSet != null) { parent.reloadComboboxMaterialDefaultSet(); }
+		
+		parent.uploadMaterialPopup.dialog("close");
+	}
+</script>
+
+<div class="popup_box">
+	<input type="text" id="fileRemark" class="EngNumInput" placeholder="재질 명칭" />
+</div>
+<table style="width: 100%;">
+	<tr>
+		<td>메테리얼</td>
+		<td><input type="file" id="file1" /></td>
+	</tr>
+	<tr>
+		<td>노멀맵</td>
+		<td><input type="file" id="file2" /></td>
+	</tr>
+	<tr>
+		<td>썸네일</td>
+		<td><input type="file" id="file3" /></td>
+	</tr>
+	<tr>
+		<td>텍스처</td>
+		<td><input type="file" id="file4" /></td>
+	</tr>
+	<tr>
+		<td>메탈릭/스펙큘러</td>
+		<td><input type="file" id="file5" /></td>
+	</tr>
+</table>
+* 오브젝트명과 세트명은 알파벳과 숫자만 입력가능합니다.
+<div class="text-center" style="margin-top: 20px;">
+	<input type="button" value="업로드" onclick="uploadFile();"/>
+</div>

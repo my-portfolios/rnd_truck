@@ -1,0 +1,6 @@
+{
+    "name": "BaseCar",
+    "version": "1.0.0",
+    "path": "/basecar",
+    "use": true
+}

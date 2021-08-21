@@ -1,0 +1,112 @@
+<div role="tabpanel">
+	<%- include (`${displayPath}/applications/API/views/api_info/api_info_header.ejs`, {data: 'equipment', type: 'type_select'}) %>
+
+	<div role="tabpanel" class="tab-pane" id="profile">
+		<div class="text-left">
+			<h4 class="title"><strong>2. 장치 분류 조회</strong></h4>
+			<p class="content_title"> API 요청</p>
+			<ul>
+				<li>&nbsp;&nbsp;[GET] http://camping-car.co.kr/openapi/data/equipment/type/list</li>
+			</ul>
+			<br/>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_request_headers_info.ejs`) %>
+
+		<div class="text-left"><p class="content_title">Request Parameters</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+					  <th>요청 변수</th>
+					  <th>설명</th>
+					  <th>타입</th>
+					  <th>필수여부</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <td colspan="4">요청 파라미터 없음</td>
+					</tr>
+				  </tbody>
+			</table>
+		</div>
+		
+		<div class="text-left"><p class="content_title"> Response: Success</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+					  <th>필드</th>
+					  <th>설명</th>
+					  <th>타입</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <td>DATA.RESULT</td>
+					  <td>API 요청에 대한 결과</td>
+					  <td>boolean</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CODE_KEY</td>
+					  <td>장치 분류에 대한 고유 키</td>
+					  <td>number</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CATEGORY</td>
+					  <td>코드 분류에 대한 카테고리</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CODE_ID</td>
+					  <td>코드 아이디</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CODE_NM</td>
+					  <td>코드이름</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.SORT_ORDER</td>
+					  <td>정렬순서</td>
+					  <td>number</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.REMARK</td>
+					  <td>비고</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.USE_YN</td>
+					  <td>사용여부</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CREATE_ID</td>
+					  <td>최초등록자</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.UPDATE_ID</td>
+					  <td>최종수정자</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.CREATE_DT</td>
+					  <td>최초등록일시</td>
+					  <td>string</td>
+					</tr>
+					<tr>
+					  <td>DATA.DATA.UPDATE_DT</td>
+					  <td>최종수정일시</td>
+					  <td>string</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_error_info.ejs`) %>
+	</div>
+</div>

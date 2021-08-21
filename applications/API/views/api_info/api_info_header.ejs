@@ -1,0 +1,34 @@
+<style>
+	table tr td, th {
+		text-align: center;
+	}
+</style>
+
+<ul class="nav nav-tabs" role="tablist">
+	<li role="presentation" <% if(data == 'basecar') { %> class="active" <% } %>><a href="/openapi/info/basecar/select">베이스카</a></li>
+	<li role="presentation" <% if(data == 'equipment') { %> class="active" <% } %>><a href="/openapi/info/equipment/select">장치</a></li>
+	<li role="presentation" <% if(data == 'prodcar') { %> class="active" <% } %>><a href="/openapi/info/prodcar/select">완성차</a></li>
+	<li role="presentation" <% if(data == 'user') { %> class="active" <% } %>><a href="/openapi/info/user/select">회원</a></li>
+</ul>
+
+<ul class="nav nav-tabs" role="tablist">
+	<% switch(data) { 
+		case 'basecar' : %>
+			<li role="presentation" <% if(type == 'select') { %> class="active" <% } %> style="width:100% !important"><a href="/openapi/info/basecar/select">베이스카 조회</a></li>
+		<% break; 
+		case 'equipment' : %>
+			<li role="presentation" <% if(type == 'select') { %> class="active" <% } %> style="width:50% !important"><a href="/openapi/info/equipment/select">장치 조회</a></li>
+			<li role="presentation" <% if(type == 'type_select') { %> class="active" <% } %> style="width:50% !important"><a href="/openapi/info/equipment/type/select">장치 분류 조회</a></li>
+		<% break; 
+		case 'prodcar' : %>
+			<li role="presentation" <% if(type == 'select') { %> class="active" <% } %> style="width:25% !important"><a href="/openapi/info/prodcar/select">완성차 조회</a></li>
+			<li role="presentation" <% if(type == 'insert') { %> class="active" <% } %> style="width:25% !important"><a href="/openapi/info/prodcar/insert">완성차 등록</a></li>
+			<li role="presentation" <% if(type == 'update') { %> class="active" <% } %> style="width:25% !important"><a href="/openapi/info/prodcar/update">완성차 수정</a></li>
+			<li role="presentation" <% if(type == 'delete') { %> class="active" <% } %> style="width:25% !important"><a href="/openapi/info/prodcar/delete">완성차 삭제</a></li>
+		<% break; 
+		case 'user' : %>
+			<li role="presentation" <% if(type == 'select') { %> class="active" <% } %> style="width:100% !important"><a href="/openapi/info/user/select">회원 조회</a></li>
+		<% break; %>
+	<% } %>
+
+</ul>

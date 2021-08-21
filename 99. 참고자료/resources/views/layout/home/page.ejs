@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>캠핑카 포털</title>
+		<%- include (`${displayPath}/resources/views/layout/${displayLayoutName}/proc.ejs`) %>
+		
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				<%- include (`${displayPath}/resources/views/layout/${displayLayoutName}/head.ejs`, {displayLayoutName: displayLayoutName, userInfo: userInfo}) %>
+			</header>
+
+			<div class="sub_page">
+				<%- include (displayViewPath, params) %>
+			</div>
+			<footer>
+				<%- include (`${displayPath}/resources/views/layout/${displayLayoutName}/foot.ejs`) %>
+			</footer>
+		</div>
+	</body>
+</html>

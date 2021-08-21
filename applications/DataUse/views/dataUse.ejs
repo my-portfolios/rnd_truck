@@ -1,0 +1,55 @@
+<script>
+    function createAction() {
+			location.href="/data/write";
+		}
+		
+		$(function () {
+			$('#searchAction').click(function (e) {
+				$('#frm').submit();
+			});
+		})
+</script>
+
+<!--검색영역-->
+<div class="row">
+	<div class="col-md-2 col-xs-12 text-left">
+		<div class="btn-group" role="group" aria-label="...">
+			<input type="button" onclick="createAction();" value="정보 등록" class="btn btn-sm btn-danger" />
+		</div>
+  </div>
+
+</div>
+<!--검색영역-->
+
+<!-- list -->
+<div class="row">
+    <div  class="gallery">
+        <ul>
+         <li>
+					  <% if(dataUseList.length != 0) { %>
+					 	<% dataUseList.forEach(function(element) { %>
+							<div class="gallery_img">
+								<a href="/data/view/<%- element.datauseKey%>">
+									<% if(element.thumbnailKey != null) { %>
+										<img src="/file/image/view/<%- element.thumbnailKey%>" class="img-responsive" alt="데이터 활용 이미지">
+									<% } else { %>
+										<img src="/assets/images/replace_image.png" class="img-responsive" alt="등록이미지 없음">
+									<% } %>
+								</a>
+								<p class="gallery_title"><%- element.datauseSj%></p>
+								<p class="gallery_data"><%- element.updateDt%></p>
+                </a>
+             </div>
+						<% }); %>
+						<% } else { %>
+							<p>등록된 데이터가 없습니다.</p>
+						<% } %>
+         </li>
+       </ul>
+   </div>
+</div>
+<!-- list -->
+
+<!-- Pagination -->
+<%- pagination%>
+<!-- Pagination -->

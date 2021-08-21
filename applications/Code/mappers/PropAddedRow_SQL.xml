@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PropAddedRow">  
+
+  <select id="getPropAddedRowList">
+    SELECT
+      PROP_ADDED_ROW_KEY,
+      PROP_ADDED_ROW_TYPE,
+      PROP_ADDED_ROW_VAL,
+      PROP_ADDED_COL_NM,
+      SORT_ORDER,
+      PROP_VAL,
+      CREATE_ID,
+      UPDATE_ID,
+      CREATE_DT,
+      UPDATE_DT
+    FROM 
+      PROP_ADDED_ROW
+    WHERE 1=1
+      <if test="propAddedRowKey != null and propAddedRowKey != ''">
+        PROP_ADDED_ROW_KEY = #{propAddedRowKey}
+      </if>
+      <if test="propAddedRowType != null and propAddedRowType != '' and propAddedRowVal != null and propAddedRowVal != ''">
+        AND PROP_ADDED_ROW_TYPE = #{propAddedRowType}
+        AND PROP_ADDED_ROW_VAL = #{propAddedRowVal}
+      </if>
+      <if test="propAddedColNm != null and propAddedColNm != ''">
+        AND PROP_ADDED_COL_NM = #{propAddedColNm}
+      </if>
+  </select>
+
+  <insert id="insertPropAddedRow">
+    INSERT INTO PROP_ADDED_ROW (
+      PROP_ADDED_ROW_TYPE,
+      PROP_ADDED_ROW_VAL,
+      PROP_ADDED_COL_NM,
+      SORT_ORDER,
+      PROP_VAL,
+      CREATE_ID,
+      UPDATE_ID
+    ) VALUES
+		  <foreach collection="addedRowList" item="item" separator=",">(
+          #{item.propAddedRowType}, 
+          #{item.propAddedRowVal}, 
+          #{item.propAddedColNm},
+          #{item.sortOrder},
+          #{item.propVal},
+          #{item.createId},
+          #{item.updateId}
+      )</foreach>
+  </insert>
+
+  <delete id="deletePropAddedRow">
+    DELETE FROM 
+			PROP_ADDED_ROW
+		WHERE 1=1
+      <if test="propAddedRowKey != null and propAddedRowKey != ''">
+        PROP_ADDED_ROW_KEY = #{propAddedRowKey}
+      </if>
+      <if test="propAddedRowType != null and propAddedRowType != '' and propAddedRowVal != null and propAddedRowVal != ''">
+        AND PROP_ADDED_ROW_TYPE = #{propAddedRowType}
+        AND PROP_ADDED_ROW_VAL = #{propAddedRowVal}
+      </if>
+      <if test="propAddedColNm != null and propAddedColNm != ''">
+        AND PROP_ADDED_COL_NM = #{propAddedColNm}
+      </if>
+  </delete>
+</mapper>

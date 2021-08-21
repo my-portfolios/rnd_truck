@@ -1,0 +1,8 @@
+{
+    "name": "API",
+    "version": "1.0.0",
+    "path": "/openapi",
+    "use": true,
+    "passphrase": "hubizict-2020"
+
+}

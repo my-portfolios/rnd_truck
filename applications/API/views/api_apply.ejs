@@ -1,0 +1,58 @@
+<script>
+    function genAPIKeys() {
+        $.ajax({
+            url: '/openapi/genKeys', 
+            data: {
+                apiAppNm: $("#openapiAddForm").find("[name='apiAppNm']").val(),
+				apiUseBasecar: $("#openapiAddForm").find("[name='apiUseBasecar']").prop("checked") ? "Y" : "N",
+				apiUseEquipment: $("#openapiAddForm").find("[name='apiUseEquipment']").prop("checked") ? "Y" : "N",
+				apiUseProdcar: $("#openapiAddForm").find("[name='apiUseProdcar']").prop("checked") ? "Y" : "N",
+				apiUseUser: $("#openapiAddForm").find("[name='apiUseUser']").prop("checked") ? "Y" : "N"
+            },
+            type: 'post',
+            success: function(data) {
+                if(data.result) {
+                    $("#pemKeyDownload").find("[name='apiKey']").val(data.apiKey);
+                    $("#pemKeyDownload").find("[name='privateKey']").val(data.privateKey);
+                    $("#pemKeyDownload").submit();
+                } else {
+                    alert('API 키 생성 중 오류가 발생하였습니다.');
+                }
+            }
+        }).fail(function() {
+            alert('API 키 생성 중 오류가 발생하였습니다.');
+        })
+    }
+
+</script>
+
+
+<form id="openapiAddForm" action="/openapi/genKeys" method="post">
+<input type="hidden" name="" value=""/>
+ <div class="board_list"> 
+    <table>
+        <tr>
+            <th>시스템명</th>
+            <td><input type="text" name="apiAppNm" /></td>
+		</tr>
+		<tr>
+            <th>사용 API</th>
+			<td>
+				<label><input type="checkbox" name="apiUseBasecar" value="basecar"/>베이스카</label>
+				<label><input type="checkbox" name="apiUseEquipment" value="equipment"/>장치</label>
+				<label><input type="checkbox" name="apiUseProdcar" value="prodcar"/>완성차</label>
+				<label><input type="checkbox" name="apiUseUser" value="user"/>회원</label>
+			</td>
+        </tr>
+    </table>
+    <p class="text-center">		
+		<input type="button" onclick="genAPIKeys();" class="btn btn-primary" value="API 신청" >
+		<input type="button" onclick="location.href='/openapi/info';"  class="btn btn-primary" value="취소" >
+	</p>
+</div>
+</form>
+
+<form id="pemKeyDownload" action='/openapi/genKeysView' method="post" style="display:none;">
+    <input type="hidden" name="apiKey"/>
+    <textarea name="privateKey"></textarea>
+</form>

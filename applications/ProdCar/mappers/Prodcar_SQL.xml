@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Prodcar">
+    <select id="getProdCarList">
+        SELECT 
+			PRODCAR_KEY,
+			PRODCAR_NM,
+			PRODCAR_MODEL_ID,
+			PRODCAR_MANU_ID,
+			PRODCAR_PRICE,
+			CREATE_ID,
+			UPDATE_ID,
+			CREATE_DT,
+			UPDATE_DT
+		FROM
+			PROD_CAR
+		WHERE 1=1
+			<if test="prodcarKey != null and prodcarKey != ''">
+				AND PRODCAR_KEY = #{prodcarKey}
+			</if>
+			<if test="prodcarModelId != null and prodcarModelId != ''">
+				AND PRODCAR_MODEL_ID = #{prodcarModelId}
+			</if>
+			<if test="createId != null and createId != ''">
+				AND CREATE_ID = #{createId}
+			</if>
+			<if test="searchType != null and searchType != '' and searchValue != null and searchValue != ''">
+				<choose>
+					<when test="searchType == 'prodcarNm'">AND PRODCAR_NM LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'prodcarModelId'">AND PRODCAR_MODEL_ID LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'prodcarManuId'">AND PRODCAR_MANU_ID LIKE '%' #{searchValue} '%'</when>
+				</choose>
+			</if>
+		ORDER BY CREATE_DT DESC
+    </select>
+
+	<select id="getProdCarInfoList">
+        SELECT 
+			PRODCAR_INFO_KEY,
+			PRODCAR_KEY,
+			PRODCAR_REF_TYPE,
+			PRODCAR_REF_KEY,
+			PRODCAR_OBJECT_SET_NM,
+			PRODCAR_MATERIAL_SET_NM,
+			PRODCAR_POS_X,
+			PRODCAR_POS_Y,
+			PRODCAR_POS_Z,
+			PRODCAR_ROT_X,
+			PRODCAR_ROT_Y,
+			PRODCAR_ROT_Z,
+			CREATE_ID,
+			UPDATE_ID,
+			CREATE_DT,
+			UPDATE_DT
+		FROM
+			PROD_CAR_INFO
+		WHERE 1=1
+			<if test="prodcarInfoKey != null and prodcarInfoKey != ''">
+				AND PRODCAR_INFO_KEY = #{prodcarInfoKey}
+			</if>
+			<if test="prodcarKey != null and prodcarKey != ''">
+				AND PRODCAR_KEY = #{prodcarKey}
+			</if>
+			<if test="prodcarRefType != null and prodcarRefType != ''">
+				AND PRODCAR_REF_TYPE = #{prodcarRefType}
+			</if>
+			<if test="prodcarRefKey != null and prodcarRefKey != ''">
+				AND PRODCAR_REF_KEY = #{prodcarRefKey}
+			</if>
+		ORDER BY CREATE_DT DESC
+    </select>
+
+	<insert id="insertProdcar">
+        INSERT INTO PROD_CAR (
+			<if test="prodcarKey != null and prodcarKey != ''">
+			PRODCAR_KEY,
+			</if>
+			PRODCAR_NM,
+			PRODCAR_MODEL_ID,
+			PRODCAR_MANU_ID,
+			PRODCAR_PRICE,
+			CREATE_ID,
+			UPDATE_ID
+			<if test="createDt != null and createDt != ''">
+			, CREATE_DT
+			</if>
+		) VALUES (
+			<if test="prodcarKey != null and prodcarKey != ''">
+			#{prodcarKey},
+			</if>
+			#{prodcarNm},
+			#{prodcarModelId},
+			#{prodcarManuId},
+			#{prodcarPrice},
+			#{createId},
+			#{updateId}
+			<if test="createDt != null and createDt != ''">
+			, #{createDt}
+			</if>
+		)
+    </insert>
+
+	<insert id="insertProdcarInfo">
+        INSERT INTO PROD_CAR_INFO (
+			PRODCAR_KEY,
+			PRODCAR_REF_TYPE,
+			PRODCAR_REF_KEY,
+			<if test="prodcarObjectSetNm != undefined and prodcarObjectSetNm != null and prodcarObjectSetNm != ''">
+			PRODCAR_OBJECT_SET_NM,
+			</if>
+			<if test="prodcarMaterialSetNm != undefined and prodcarMaterialSetNm != null and prodcarMaterialSetNm != ''">
+			PRODCAR_MATERIAL_SET_NM,
+			</if>
+			PRODCAR_POS_X,
+			PRODCAR_POS_Y,
+			PRODCAR_POS_Z,
+			PRODCAR_ROT_X,
+			PRODCAR_ROT_Y,
+			PRODCAR_ROT_Z,
+			CREATE_ID,
+			UPDATE_ID
+		) VALUES (
+			#{prodcarKey},
+			#{prodcarRefType},
+			#{prodcarRefKey},
+			<if test="prodcarObjectSetNm != undefined and prodcarObjectSetNm != null and prodcarObjectSetNm != ''">
+			#{prodcarObjectSetNm},
+			</if>
+			<if test="prodcarMaterialSetNm != undefined and prodcarMaterialSetNm != null and prodcarMaterialSetNm != ''">
+			#{prodcarMaterialSetNm},
+			</if>
+			#{prodcarPosX},
+			#{prodcarPosY},
+			#{prodcarPosZ},
+			#{prodcarRotX},
+			#{prodcarRotY},
+			#{prodcarRotZ},
+			#{createId},
+			#{updateId}
+		)	
+    </insert>
+
+	<update id="updateProdcar">
+        UPDATE
+			PROD_CAR
+		SET
+			PRODCAR_NM = #{prodcarNm},
+			PRODCAR_MODEL_ID = #{prodcarModelId},
+			PRODCAR_MANU_ID = #{prodcarManuId},
+			PRODCAR_PRICE = #{prodcarPrice},
+			UPDATE_ID = #{updateId}
+		WHERE 1=1
+		AND PRODCAR_KEY = #{prodcarKey}
+    </update>
+
+	<update id="updateProdcarInfo">
+        UPDATE
+			PROD_CAR_INFO
+		SET
+			PRODCAR_REF_TYPE = #{prodcarRefType},
+			PRODCAR_REF_KEY = #{prodcarRefKey},
+			<if test="prodcarObjectSetNm != undefined and prodcarObjectSetNm != null and prodcarObjectSetNm != ''">
+				PRODCAR_OBJECT_SET_NM = #{prodcarObjectSetNm},
+			</if>
+			<if test="prodcarMaterialSetNm != undefined and prodcarMaterialSetNm != null and prodcarMaterialSetNm != ''">
+				PRODCAR_MATERIAL_SET_NM = #{prodcarMaterialSetNm},
+			</if>
+			PRODCAR_POS_X = #{prodcarPosX},
+			PRODCAR_POS_Y = #{prodcarPosY},
+			PRODCAR_POS_Z = #{prodcarPosZ},
+			PRODCAR_ROT_X = #{prodcarRotX},
+			PRODCAR_ROT_Y = #{prodcarRotY},
+			PRODCAR_ROT_Z = #{prodcarRotZ},
+			UPDATE_ID = #{updateId}
+		)
+		WHERE 1=1
+		AND PRODCAR_INFO_KEY = #{prodcarInfoKey}
+    </update>
+
+	<delete id="deleteProdcar">
+        DELETE FROM
+			PROD_CAR
+		WHERE 1=1
+		AND PRODCAR_KEY = #{prodcarKey}
+    </delete>
+
+	<delete id="deleteProdcarInfo">
+        DELETE FROM
+			PROD_CAR_INFO
+		WHERE 1=1
+		<if test="prodcarInfoKey != null and prodcarInfoKey != ''">
+			AND PRODCAR_INFO_KEY = #{prodcarInfoKey}
+		</if>
+		<if test="prodcarKey != null and prodcarKey != ''">
+			AND PRODCAR_KEY = #{prodcarKey}
+		</if>
+    </delete>
+</mapper>

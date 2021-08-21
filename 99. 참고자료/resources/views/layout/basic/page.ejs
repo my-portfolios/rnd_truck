@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>캠핑카 포털</title>
+		<%- include (`${displayPath}/resources/views/layout/home/proc.ejs`) %>
+		<script>
+			var menuInfo = <%- JSON.stringify(menuInfo) %>;
+			$(function() {
+				var currentMenuInfo = 'No Menu Matched', currentMenuTree = 'No Menu Matched';
+				if(menuInfo.isFind) {
+					currentMenuInfo = menuInfo.menuList[menuInfo.menuList.length - 1];
+					currentMenuTree = menuInfo.menuList.reduce(function(acc, curVal) { return acc + ' > ' + curVal; });
+				}
+
+				$(".sub_menu > .sub_title").text(currentMenuInfo);
+				$(".sub_menu > .sub_nav").text(currentMenuTree);
+			});
+		</script>
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				<%- include (`${displayPath}/resources/views/layout/home/head.ejs`, {displayLayoutName: displayLayoutName, allMenuList: allMenuList}) %>
+			</header>
+
+			<!-- container -->
+			<div class="container">
+
+				<div class="sub_menu">
+					<h2 class="sub_title"></h2>
+					<h6 class="sub_nav"></h6>
+				</div>
+				
+				<div class="sub_content">
+				<hr class="featurette-divider">	 
+				
+				<%- include (displayViewPath, params) %>
+				</div>	
+				
+			</div>
+		 	<!-- container -->
+
+			<footer>
+				<%- include (`${displayPath}/resources/views/layout/home/foot.ejs`) %>
+			</footer>
+		</div>
+	</body>
+</html>

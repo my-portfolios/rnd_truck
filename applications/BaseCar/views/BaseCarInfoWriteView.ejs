@@ -1,0 +1,865 @@
+<% let basecarInfo = ((typeof basecar != 'undefined' && basecar != null) ? basecar : new Object()); 
+   let existObject3dFileInfo = ((typeof object3dFile != 'undefined' && object3dFile != null) ? object3dFile : new Object()); 
+   let existMaterialFileInfo = ((typeof materialFile != 'undefined' && materialFile != null) ? materialFile : new Object()); 
+   let materialFileDescArray = ["material", "normalMap", "thumbnail", "texture", "metallic"];
+   let fileDescOption = {object3d: '3D 오브젝트', material: '메테리얼 파일', normalMap: '노멀맵', thumbnail: '썸네일', texture: '텍스처', metallic:'메탈릭/스펙큘러'};
+   let fileDescExt = {object3d: ['obj', 'fbx'], material: ['mat', 'mtl'], normalMap: ['jpg', 'png'], thumbnail: ['jpg', 'png'], texture: ['jpg', 'png'], metallic : ['jpg', 'png']};
+   let setMaterialObject = new Object();
+   let setObject3dObject = new Object();
+%>
+
+<script src="/assets/js/camping/validation.js"></script>
+<script src="/assets/js/fileUpload/upload.js"></script>
+
+<script>
+    var basecarInfo = <%- JSON.stringify(basecarInfo) %>;
+    var materialFileDescArray = <%- JSON.stringify(materialFileDescArray) %>;
+    var fileDescOption = <%- JSON.stringify(fileDescOption) %>;
+    var fileDescExt = <%- JSON.stringify(fileDescExt) %>;
+    var formCmd = '<%- cmd %>';
+    var uploadObject3dPopup = null;
+    var uploadMaterialPopup = null;
+    var uploadFilePopup = null;
+    var changeFilePopup = null;
+    var existObject3dFileInfo = <%- JSON.stringify(existObject3dFileInfo) %>;
+    var existMaterialFileInfo = <%- JSON.stringify(existMaterialFileInfo) %>;
+    var object3dNameArray = new Array();
+    var materialSetArray = new Array();
+    var existFileCnt = {object3d: 0, material: 0};
+    var fileCnt = {object3d: 0, material: 0};
+
+    $(function() {
+        PageUtility.showBlockUI();
+        setExistFileInfo();
+        PageUtility.hideBlockUI();
+        
+        $("#writeBasecarForm").validate({
+            submitHandler: function() {
+                if((existFileCnt.object3d + fileCnt.object3d) == 0) {
+                    alert('3D 오브젝트를 업로드 하세요.');
+                    return false;
+                }  else if((existFileCnt.material + fileCnt.material) == 0) {
+                    alert('메테리얼 파일을 업로드 하세요.');
+                    return false;
+                }
+
+                var message = formCmd == 'update' ? '수정' : '등록';
+                if(formCmd == 'update') { writeBasecarForm.action = '/basecar/write?_method=put'; }
+                if(confirm(message + '하시겠습니까?')) {
+                    return true;
+                }
+
+                return false;
+            },
+            rules: {
+                basecarNm: {
+                    required : true,
+                    rangelength: [2, 20]
+                },
+                basecarModelId: {
+                    required : true,
+                    rangelength: [2, 30]
+                },
+                basecarManuId: {
+                    required : true,
+                    rangelength: [2, 20]
+                },
+                basecarStandard: {
+                    required : true,
+                    standardWDH: true,
+                    rangelength: [5, 30]
+                },
+                basecarPrice: {
+                    required : true,
+                    number: true,
+                    rangelength: [1, 11]
+                },
+                basecarOilRatio: {
+                    required : true,
+                    float6_3: true
+                },
+                basecarPersonCnt: {
+                    required : true,
+                    number: true,
+                    rangelength: [1, 10]
+                },
+                basecarProdDate: {
+                    required : true,
+                    dateYear: true
+                }
+            },
+            messages : {
+                
+            }
+        });
+
+        $("[name='basecarProdDate']").keydown(function(event) { return false; });
+        $("[name='basecarProdDate']").datepicker({
+            language: 'ko',
+            dateFormat: 'yyyy',
+            minView: 'years',
+            view: 'years',
+            position: 'bottom left',
+            maxDate: new Date()
+        });
+    });
+
+    function setExistFileInfo() {
+        var object3dFileKeys = Object.keys(object3dFileObject);
+        for(var i=0;i<object3dFileKeys.length;i++) {
+            var files = object3dFileObject[ object3dFileKeys[i] ].files;
+            var filesKeys = Object.keys(files);
+
+            if(object3dNameArray.indexOf( object3dFileObject[ object3dFileKeys[i] ].name ) == -1) { object3dNameArray.push(object3dFileObject[ object3dFileKeys[i] ].name); }
+            for(var k=0;k<filesKeys.length;k++) { if(filesKeys[k] == 'object3d') { existFileCnt.object3d++; } }
+        }
+		reloadComboboxObject3dDefaultSet();
+
+        var materialFileKeys = Object.keys(materialFileObject);
+        for(var i=0;i<materialFileKeys.length;i++) {
+            var files = materialFileObject[ materialFileKeys[i] ].files;
+            var filesKeys = Object.keys(files);
+
+            if(materialSetArray.indexOf( materialFileObject[ materialFileKeys[i] ].name ) == -1) { materialSetArray.push(materialFileObject[ materialFileKeys[i] ].name); }
+            for(var k=0;k<filesKeys.length;k++) { if(filesKeys[k] == 'material') { existFileCnt.material++; } }
+		}
+
+		reloadComboboxMaterialDefaultSet();
+    }
+
+    // 삭제 실패시 함수
+    function authFailFunc(code) {
+        switch(code) {
+            case -1:
+                if(confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+                    location.href='/auth/login';
+                }
+            break;
+            case -2: case -3:
+                alert('권한이 없습니다.');	
+            break;
+            default:
+                alert('저장에 실패하였습니다.');	
+            break;
+        }
+    }
+
+    function downloadFile(fileKey) {
+		window.open('/file/download/' + fileKey);
+    }
+
+    function moveToBaseCarList() {
+		location.href = '/basecar/list';
+	}
+    
+    function deleteBaseCar() {
+        if(confirm('정말 삭제하시겠습니까?')) {
+            FileDeleteForm.action = '/basecar/write/<%- basecarInfo.basecarKey %>?_method=delete';
+            FileDeleteForm.submit();
+        }
+    }
+
+    // 새로운 파일 삭제
+    function removeNewFile(el) {
+        var dataName = $(el).attr('hbz-data-name');
+        var fileDesc = $(el).attr('hbz-data-desc');
+        var dataRemark = $(el).attr('hbz-data-remark');
+
+        if(confirm('삭제하시겠습니까?')) {
+            $('.' + dataName).remove();
+            if(fileDesc == 'object3d') {
+                fileCnt['object3d']--;
+                var index = object3dNameArray.indexOf(dataRemark);
+                if(index != -1) { object3dNameArray.splice(index, 1); reloadComboboxObject3dDefaultSet(); }
+            } else {
+                fileCnt['material']--;
+                var index = materialSetArray.indexOf(dataRemark);
+                if(index != -1) { materialSetArray.splice(index, 1); reloadComboboxMaterialDefaultSet(); }
+            }
+            
+        }
+    }
+
+    // 단일 파일 변경 팝업
+    function changeFile(fileId, fileDesc, fileKey) {
+        if(!AuthUtility.isAuthenticated()) { 
+            if(confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) { location.href='/auth/login'; }
+            return; 
+        }
+
+        var frame = document.getElementById('ChangeFileFrame');
+
+        changeFilePopup = PageUtility.createPopupInstance({
+            el: $("#ChangeFilePopup"), 
+            frame: frame,
+            reloadFrame: true,
+            options: {title: '파일 변경', width: 500, height: 200, position: { my: "center", at: "center", of: window } }, 
+            onShow: function() {
+                frame.onload = function() {
+                    var frameWindow = frame.contentWindow || frame.contentDocument;
+                    frameWindow.creationComplete(fileKey, fileDescExt[fileDesc], function(event) {
+                        $('.fileDownloadView').each(function(i, iv) {
+                            if($(iv).attr('hbz-file-id') == fileId && $(iv).attr('hbz-file-desc') == fileDesc) {
+                                $(iv).text(event.fileInfo.originalname);
+
+                                if(fileDesc == 'object3d') {
+                                    object3dFileObject[fileId].files[fileDesc] = event.resultFile;
+                                } else {
+                                    materialFileObject[fileId].files[fileDesc] = event.resultFile;
+                                }
+                                changeFilePopup.dialog("close");
+                            }
+                        });
+                    });
+                }
+            }, 
+            onClose: function() {} 
+        }).dialog( "open" );
+    }
+
+    // 단일 파일 추가 팝업
+    function uploadFile(fileId, useType, useVal, fileDesc, remark) {
+        if(!AuthUtility.isAuthenticated()) { 
+            if(confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) { location.href='/auth/login'; }
+            return;
+        }
+
+        var frame = document.getElementById('UploadFileFrame');
+
+        uploadFilePopup = PageUtility.createPopupInstance({
+            el: $("#UploadFilePopup"), 
+            frame: frame,
+            reloadFrame: true,
+            options: {title: '파일 등록', width: 500, height: 200, position: { my: "center", at: "center", of: window } }, 
+            onShow: function() {
+                frame.onload = function() {
+                    var frameWindow = frame.contentWindow || frame.contentDocument;
+                    frameWindow.creationComplete(useType, useVal, fileDesc, remark, fileDescExt[fileDesc], function(event) {
+                        $('.fileNameView').each(function(i, iv) {
+                            if($(iv).attr('hbz-file-id') == fileId && $(iv).attr('hbz-file-desc') == fileDesc) {
+                                $(iv).after($('<a>', {href: "javascript:downloadFile('" + event.resultFile.fileKey + "');", 'hbz-file-id': fileId, 'hbz-file-desc': fileDesc, class: 'fileDownloadView', text: event.fileInfo.originalname}));
+                                $(iv).remove();
+
+                                if(fileDesc == 'object3d') {
+                                    object3dFileObject[fileId].files[fileDesc] = event.resultFile;
+                                } else {
+                                    materialFileObject[fileId].files[fileDesc] = event.resultFile;
+                                }
+                                uploadFilePopup.dialog("close");
+                            }
+                        });
+                    });
+                }
+            }, 
+            onClose: function() {} 
+        }).dialog( "open" );
+    }
+
+    // 파일 명칭 변경
+    function changeFileRemark(fileKeyArray, remark, onSuccess, onFail) {
+        $.post('/file/data/remark/change', {
+            fileKeysArray: fileKeyArray,
+            remark: remark
+        }, function(event) {
+            if(event.result == false) {
+                authFailFunc(event.code);
+            } else {
+                onSuccess(event);
+            }
+        }).fail(onFail);
+    }
+
+    // 기존 등록된 오브젝트 및 메테리얼 세트 삭제
+    function removeFileSet(fileId, fileDesc) {
+        if(existFileCnt[fileDesc] <= 1) {
+            alert(fileDescOption[fileDesc] + ' 은(는) 최소 1개 이상 업로드 되어있어야 합니다.\n기존 업로드한 파일을 지우시려면 새로운 파일을 먼저 업로드, 등록 후 다시 시도하십시오.');
+            return;
+        } else if(confirm('삭제하시겠습니까?')) {
+            var params = {
+                useType: 'BASECAR',
+                useVal: '<%- basecarInfo.basecarKey %>',
+            };
+
+            if(fileDesc == 'object3d') { 
+                params.fileDesc = fileDesc; 
+                params.remark = object3dFileObject[fileId].name;
+            } 
+            else { 
+                params.fileDescArray = ['material', 'normalMap', 'thumbnail', 'texture', 'metallic']; 
+                params.remark = materialFileObject[fileId].name;
+            }
+
+            $.post('/file/delete?_method=delete', params, function(event) {
+                if(event.result == false) {
+                    authFailFunc(event.code);
+                } else {
+                    alert('삭제하였습니다.');
+                    $('.' + fileDesc + '_' + fileId).remove();
+                    if(fileDesc == 'object3d') {
+                        existFileCnt['object3d']--;
+                        var index = object3dNameArray.indexOf(object3dFileObject[fileId].name);
+                        if(index != -1) { object3dNameArray.splice(index, 1); reloadComboboxObject3dDefaultSet(); }
+                        delete object3dFileObject[fileId];
+                    } else {
+                        existFileCnt['material']--;
+                        var index = materialSetArray.indexOf(materialFileObject[fileId].name);
+                        if(index != -1) { materialSetArray.splice(index, 1); reloadComboboxMaterialDefaultSet(); }
+                        delete materialFileObject[fileId];
+                    }
+                }
+            }).fail(function(event) {
+                alert('삭제에 실패하였습니다.');
+            });
+        }
+    }
+
+    ///////////////////////////////////////////////////////////// 3D 오브젝트
+
+    // 3D 오브젝트 추가 팝업
+    function uploadObject3d(elId) {
+        var frame = document.getElementById('UploadObject3dFrame');
+
+		uploadObject3dPopup = PageUtility.createPopupInstance({
+			el: $("#UploadObject3dPopup"), 
+			frame: frame,
+			reloadFrame: true,
+			options: {title: '3D 오브젝트 업로드', width: 500, height: 250, position: { my: "center", at: "center", of: window } }, 
+			onShow: function() {
+		    	frame.onload = function() {
+		        	var frameWindow = frame.contentWindow || frame.contentDocument;
+		        	frameWindow.creationComplete(elId);
+				}
+			}, 
+			onClose: function() {} 
+		}).dialog( "open" );
+    }
+
+    // 오브젝트 이름 변경
+    function changeObject3dSetName(object3dSetId) {
+        var viewEl = getObject3dSetNameView(object3dSetId);
+        var inputEl = getObject3dSetNameInput(object3dSetId);
+        var cancelEl = getObject3dSetNameCancel(object3dSetId);
+        var oldName = object3dFileObject[object3dSetId].name;
+        var newName = $(inputEl).val();
+        if(viewEl == null || inputEl == null || cancelEl == null) { return; }
+
+        if($(viewEl).css('display') == 'none') { // 수정 모드 -> 저장 후 보기 모드
+            if(newName.length == 0 || newName.length > 20) {
+                alert('명칭은 1자에서 20자 이내로 입력하십시오.');
+                return;
+            } else if(object3dNameArray.indexOf(newName) != -1) { 
+                alert('이미 등록된 오브젝트명입니다.');
+                return;
+            } 
+
+            if(confirm("오브젝트명을 변경하시겠습니까?")) {
+                var object3dFileSetFiles = object3dFileObject[object3dSetId].files;
+                var object3dFileSetFilesKeys = Object.keys(object3dFileSetFiles);
+                var object3dFilesKeyArray = new Array();
+
+                for(var i=0;i<object3dFileSetFilesKeys.length;i++) { object3dFilesKeyArray.push( object3dFileSetFiles[object3dFileSetFilesKeys[i]].fileKey ); }
+                changeFileRemark(object3dFilesKeyArray, newName, function(data) {
+                    if(data.result == false) {
+                        alert('오브젝트명 변경 중 오류가 발생하였습니다.');
+                        return;
+                    } else {
+                        var index = object3dNameArray.indexOf(oldName);
+                        if(index != -1) { object3dNameArray.splice(index, 1); reloadComboboxObject3dDefaultSet(); }
+						object3dNameArray.push(newName);
+						reloadComboboxObject3dDefaultSet();
+                        object3dFileObject[object3dSetId].name = newName;
+                        $(inputEl).hide();
+                        $(viewEl).show();
+                        $(viewEl).text(newName);
+                        $(cancelEl).hide();
+                    }
+                }, function(data) {
+                    alert('오브젝트명 변경 중 오류가 발생하였습니다.');
+                    return;
+                });
+            }
+        } else { // 보기 모드 -> 수정 모드로 전환
+            $(viewEl).hide();
+            $(inputEl).show();
+            $(inputEl).val(object3dFileObject[object3dSetId].name);
+            $(cancelEl).show();
+        }        
+    }
+
+    function cancelObject3dSetName(object3dSetId) {
+        var viewEl = getObject3dSetNameView(object3dSetId);
+        var inputEl = getObject3dSetNameInput(object3dSetId);
+        var cancelEl = getObject3dSetNameCancel(object3dSetId);
+        if(viewEl == null || inputEl == null || cancelEl == null) { return; }
+
+        $(inputEl).hide();
+        $(viewEl).show();
+        $(cancelEl).hide();
+    }
+
+    // 오브젝트명 뷰 엘리먼트 가져오기
+    function getObject3dSetNameView(object3dSetId) {
+        var el = null;
+        $('.object3d_set_name_view').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == object3dSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+    // 오브젝트명 이름 입력 엘리먼트 가져오기
+    function getObject3dSetNameInput(object3dSetId) {
+        var el = null;
+        $('.object3d_set_name_input').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == object3dSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+    // 메테리얼 세트 이름 변경 취소 엘리먼트 가져오기
+    function getObject3dSetNameCancel(object3dSetId) {
+        var el = null;
+        $('.object3d_set_name_cancel').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == object3dSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+    function changeObject3dSetFile(object3dSetId, fileDesc) {
+        var object3dFileSetFiles = object3dFileObject[object3dSetId].files;
+        var object3dFileSetFilesKeys = Object.keys(object3dFileSetFiles);
+        var existFileInfo = null;
+
+        for(var i=0;i<object3dFileSetFilesKeys.length;i++) {
+            if(object3dFileSetFilesKeys[i] == fileDesc) { existFileInfo = object3dFileSetFiles[object3dFileSetFilesKeys[i]]; }
+        }
+        
+        var fileKey = object3dFileObject[object3dSetId].files[fileDesc].fileKey;
+        changeFile(object3dSetId, fileDesc, fileKey);
+    }
+    ///////////////////////////////////////////////////////////// 3D 오브젝트
+
+    ///////////////////////////////////////////////////////////// 메테리얼 
+
+    // 메테리얼 추가 팝업
+    function uploadMaterial(elId) {
+        var frame = document.getElementById('UploadMaterialFrame');
+
+		uploadMaterialPopup = PageUtility.createPopupInstance({
+			el: $("#UploadMaterialPopup"), 
+			frame: frame,
+			reloadFrame: true,
+			options: {title: '메테리얼 업로드', width: 500, height: 400, position: { my: "center", at: "center", of: window } }, 
+			onShow: function() {
+		    	frame.onload = function() {
+		        	var frameWindow = frame.contentWindow || frame.contentDocument;
+		        	frameWindow.creationComplete(elId);
+				}
+			}, 
+			onClose: function() {} 
+		}).dialog( "open" );
+    }
+    
+    // 수정 시 기존 메테리얼 파일 추가 및 변경
+    function changeMaterialSetFile(materialSetId, fileDesc) {
+        var materialFileSetFiles = materialFileObject[materialSetId].files;
+        var materialFileSetFilesKeys = Object.keys(materialFileSetFiles);
+        var existFileInfo = null;
+
+        for(var i=0;i<materialFileSetFilesKeys.length;i++) {
+            if(materialFileSetFilesKeys[i] == fileDesc) { existFileInfo = materialFileSetFiles[materialFileSetFilesKeys[i]]; }
+        }
+
+        if(existFileInfo == null) { // 파일 추가
+            uploadFile(materialSetId, 'BASECAR', '<%- basecarInfo.basecarKey %>', fileDesc, materialFileObject[materialSetId].name);
+        } else { // 파일 변경
+            var fileKey = materialFileObject[materialSetId].files[fileDesc].fileKey;
+            changeFile(materialSetId, fileDesc, fileKey);
+        }
+
+    }
+
+    // 메테리얼 세트 이름 변경
+    function changeMaterialSetName(materialSetId) {
+        var viewEl = getMaterialSetNameView(materialSetId);
+        var inputEl = getMaterialSetNameInput(materialSetId);
+        var cancelEl = getMaterialSetNameCancel(materialSetId);
+        var oldName = materialFileObject[materialSetId].name;
+        var newName = $(inputEl).val();
+        if(viewEl == null || inputEl == null || cancelEl == null) { return; }
+
+        if($(viewEl).css('display') == 'none') { // 수정 모드 -> 저장 후 보기 모드
+            if(newName.length == 0 || newName.length > 20) {
+                alert('명칭은 1자에서 20자 이내로 입력하십시오.');
+                return;
+            } else if(materialSetArray.indexOf(newName) != -1) { 
+                alert('이미 등록된 세트명입니다.');
+                return;
+            }
+
+            if(confirm("세트명을 변경하시겠습니까?")) {
+                var materialFileSetFiles = materialFileObject[materialSetId].files;
+                var materialFileSetFilesKeys = Object.keys(materialFileSetFiles);
+                var materialFilesKeyArray = new Array();
+
+                for(var i=0;i<materialFileSetFilesKeys.length;i++) { materialFilesKeyArray.push( materialFileSetFiles[materialFileSetFilesKeys[i]].fileKey ); }
+                changeFileRemark(materialFilesKeyArray, newName, function(data) {
+                    if(data.result == false) {
+                        alert('세트명 변경 중 오류가 발생하였습니다.');
+                        return;
+                    } else {
+                        var index = materialSetArray.indexOf(oldName);
+                        if(index != -1) { materialSetArray.splice(index, 1); reloadComboboxMaterialDefaultSet();}
+						materialSetArray.push(newName);
+						reloadComboboxMaterialDefaultSet();
+                        materialFileObject[materialSetId].name = newName;
+                        $(inputEl).hide();
+                        $(viewEl).show();
+                        $(viewEl).text(newName);
+                        $(cancelEl).hide();
+                    }
+                }, function(data) {
+                    alert('세트 명 변경 중 오류가 발생하였습니다.');
+                    return;
+                });
+            }
+        } else { // 보기 모드 -> 수정 모드로 전환
+            $(viewEl).hide();
+            $(inputEl).show();
+            $(inputEl).val(materialFileObject[materialSetId].name);
+            $(cancelEl).show();
+        }        
+    }
+
+    function cancelMaterialSetName(materialSetId) {
+        var viewEl = getMaterialSetNameView(materialSetId);
+        var inputEl = getMaterialSetNameInput(materialSetId);
+        var cancelEl = getMaterialSetNameCancel(materialSetId);
+        if(viewEl == null || inputEl == null || cancelEl == null) { return; }
+
+        $(inputEl).hide();
+        $(viewEl).show();
+        $(cancelEl).hide();
+    }
+
+    // 기존 등록된 파일 삭제
+    function removeMaterialFile(materialSetId, fileDesc) {
+        var materialFileSetFiles = materialFileObject[materialSetId].files;
+        var materialFileSetFilesKeys = Object.keys(materialFileSetFiles);
+        var existFileInfo = null;
+
+        for(var i=0;i<materialFileSetFilesKeys.length;i++) {
+            if(materialFileSetFilesKeys[i] == fileDesc) { existFileInfo = materialFileSetFiles[materialFileSetFilesKeys[i]]; }
+        }
+
+        if(fileDesc == 'material') {
+            alert('메테리얼 파일은 삭제할 수 없습니다. 삭제를 원하시면 메테리얼 세트를 삭제하십시오.');
+            return;
+        } else if(existFileInfo == null) { 
+            alert('등록된 파일이 없습니다.');
+            return;
+        } else if(confirm('파일을 삭제하시겠습니까?')) {
+            $.post('/file/delete?_method=delete', {
+                useType: 'BASECAR',
+                useVal: '<%- basecarInfo.basecarKey %>',
+                remark: materialFileObject[materialSetId].name,
+                fileDesc: fileDesc
+            }, function(event) {
+                if(event.result == false) {
+                    authFailFunc(event.code);
+                } else {
+                    alert('삭제하였습니다.');
+                    $('.fileDownloadView').each(function(i, iv) {
+                        if($(iv).attr('hbz-file-id') == materialSetId && $(iv).attr('hbz-file-desc') == fileDesc) {
+                            delete materialFileObject[materialSetId].files[fileDesc];
+                            $(iv).after($('<span>', {'hbz-file-id': materialSetId, 'hbz-file-desc': fileDesc, class: 'fileNameView', text: '파일정보 없음'}));
+                            $(iv).remove();
+                        }
+                    });
+                }
+            }).fail(function(event) {
+                alert('삭제에 실패하였습니다.');
+            });
+        }
+    }
+
+    // 메테리얼 세트 이름 뷰 엘리먼트 가져오기
+    function getMaterialSetNameView(materialSetId) {
+        var el = null;
+        $('.material_set_name_view').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == materialSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+    // 메테리얼 세트 이름 입력 엘리먼트 가져오기
+    function getMaterialSetNameInput(materialSetId) {
+        var el = null;
+        $('.material_set_name_input').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == materialSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+    // 메테리얼 세트 이름 변경 취소 엘리먼트 가져오기
+    function getMaterialSetNameCancel(materialSetId) {
+        var el = null;
+        $('.material_set_name_cancel').each(function(i, iv) {
+            if($(iv).attr('hbz-file-id') == materialSetId) { el = $(iv); }
+        });
+
+        return el;
+    }
+
+	///////////////////////////////////////////////////////////// 메테리얼 
+	
+	function reloadComboboxMaterialDefaultSet() {
+		var savedValue = "<%- basecarInfo.materialDefaultSet %>";
+		var currentValue = $("#materialDefaultSet").val();
+		if(currentValue == null || currentValue == '') { currentValue = savedValue; }
+
+		$("#materialDefaultSet").empty();
+		ComboUtility.appendComboDataFromArray($("#materialDefaultSet"), materialSetArray, false);
+		if(ComboUtility.getOptionElementWithValue($("#materialDefaultSet"), currentValue) != null) { $("#materialDefaultSet").val(currentValue); }
+	}
+
+	function reloadComboboxObject3dDefaultSet() {
+		var savedValue = "<%- basecarInfo.object3DDefaultSet %>";
+		var currentValue = $("#object3dDefaultSet").val();
+		if(currentValue == null || currentValue == '') { currentValue = savedValue; }
+
+		$("#object3dDefaultSet").empty();
+		ComboUtility.appendComboDataFromArray($("#object3dDefaultSet"), object3dNameArray, false);
+		if(ComboUtility.getOptionElementWithValue($("#object3dDefaultSet"), currentValue) != null) { $("#object3dDefaultSet").val(currentValue); }
+	}
+</script>
+<form id="writeBasecarForm" action="/basecar/write/" method="post" enctype="multipart/form-data">
+<input type="hidden" name="basecarKey" value="<%- basecarInfo.basecarKey %>"/>
+ <div class="board_list"> 
+    <table>
+        <tr>
+            <th>이름</th>
+            <td><input type="text" name="basecarNm" value="<%- basecarInfo.basecarNm %>"/></td>
+        </tr>
+        <tr>
+            <th>모델명</th>
+            <td><input type="text" name="basecarModelId" value="<%- basecarInfo.basecarModelId %>"/></td>
+        </tr>
+        <tr>
+            <th>제조회사</th>
+            <td><input type="text" name="basecarManuId" value="<%- basecarInfo.basecarManuId %>"/></td>
+        </tr>
+        <tr>
+            <th>규격(가로*세로*높이)</th>
+            <td>
+                <input type="text" name="basecarStandard" value="<%- basecarInfo.basecarStandard %>"/>
+                <br/>* 규격은 가로*세로*높이 형태로 입력하세요.
+            </td>
+        </tr>
+        <tr>
+            <th>가격(원)</th>
+            <td>
+                <input type="text" name="basecarPrice" value="<%- basecarInfo.basecarPrice %>"/>
+                <br/>* 가격은 숫자만 입력하세요.
+            </td>
+        </tr>
+        <tr>
+            <th>연비(km/L)</th>
+            <td>
+                <input type="text" name="basecarOilRatio" value="<%- basecarInfo.basecarOilRatio %>"/>
+                <br/>* 연비는 실수 형태로 입력하세요.
+            </td>
+        </tr>
+        <tr>
+            <th>탑승인원(명)</th>
+            <td>
+                <input type="text" name="basecarPersonCnt" value="<%- basecarInfo.basecarPersonCnt %>"/>
+                <br/>* 탑승인원은 숫자만 입력하세요.
+            </td>
+        </tr>
+        <tr>
+            <th>제조연도</th>
+            <td>
+                <input type="text" name="basecarProdDate" value="<%- basecarInfo.basecarProdDate %>" />
+            </td>
+        </tr>
+        <tr>
+            <th>3D 오브젝트</th>
+            <td>
+                <input type="button" value="추가" onclick="uploadObject3d('object3dList');"/>
+                <table id="object3dList"></table>
+            </td>
+		</tr>
+        <tr>
+            <th>재질</th>
+            <td>
+                <input type="button" value="추가" onclick="uploadMaterial('materialList');"/>
+                <table id="materialList"></table>
+            </td>
+		</tr>
+		<tr>
+            <th>기본 3D오브젝트</th>
+            <td>
+                <select name="object3dDefaultSet" id="object3dDefaultSet"></select>
+            </td>
+        </tr>
+		<tr>
+            <th>기본 재질</th>
+            <td>
+                <select name="materialDefaultSet" id="materialDefaultSet"></select>
+            </td>
+        </tr>
+    </table>
+    <p class="text-center">
+        <input type="button" class="btn btn-info" value="목록" onclick="moveToBaseCarList();">
+        <input type="submit" class="btn btn-primary" value="등록" >
+        <% if(cmd == 'update') { %>
+            <input type="button" class="btn btn-danger" value="삭제" onclick="deleteBaseCar();">
+        <% } %>
+    </p>
+</div>
+</form>
+
+<% if(cmd == 'update') { %>
+    <br/>
+    <div class="popup_box text-left">
+        <strong>업로드 된 파일들</strong><br/>
+        * 기존에 업로드 된 파일들은 수정 시 자동 저장됩니다.<br/>
+        * 오브젝트명과 세트명은 알파벳과 숫자만 입력가능합니다.
+    </div>
+    <table>
+        <tr>
+            <th>3D 오브젝트</th>
+            <td>
+                <table>
+                    <tr>
+                        <th>오브젝트명</th>
+                        <th>파일명</th>
+                        <th>관리</th>
+                    </tr>
+                    
+                    <% if(object3dFile != null && object3dFile.length > 0) {
+                        for(var i=0;i<object3dFile.length;i++) {
+                            let uniqueKey = object3dFile[i].remark;
+                            if(setObject3dObject[uniqueKey] == null) { setObject3dObject[uniqueKey] = new Object(); }
+                            setObject3dObject[uniqueKey].name = object3dFile[i].remark;
+                            if( setObject3dObject[uniqueKey].files == null) { setObject3dObject[uniqueKey].files = new Object(); }
+                            setObject3dObject[uniqueKey].files[object3dFile[i].fileDesc] = object3dFile[i];
+                        }
+                    
+                        let setObject3dObjectKeys = Object.keys(setObject3dObject);
+                        for(var i=0;i<setObject3dObjectKeys.length;i++) { 
+                            let setObject = setObject3dObject[setObject3dObjectKeys[i]].files;
+                            let setObjectKeys = Object.keys(setObject); %>
+                            <tr class="object3d_<%- setObject3dObjectKeys[i] %>">
+                                <td>
+                                    <span class="object3d_set_name_view" hbz-file-id="<%- setObject3dObjectKeys[i] %>"><%- setObject3dObject[setObject3dObjectKeys[i]].name %></span>
+                                    <input class="object3d_set_name_input EngNumInput" hbz-file-id="<%- setObject3dObjectKeys[i] %>" type="text" style="display:none"/>
+                                </td>
+                                <td> 
+                                    <a href="javascript:downloadFile('<%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.fileKey %>');" hbz-file-id="<%- setObject3dObjectKeys[i] %>" hbz-file-desc="<%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.fileDesc %>" class="fileDownloadView"><%- setObject3dObject[setObject3dObjectKeys[i]].files.object3d.orginName %></a>
+                                </td>
+                                <td>
+                                    <input type="button" class="object3d_set_name_change" hbz-file-id="<%- setObject3dObjectKeys[i] %>" onclick="changeObject3dSetName('<%- setObject3dObjectKeys[i] %>');" value="세트명 변경"/>
+                                    <input type="button" class="object3d_set_name_cancel" hbz-file-id="<%- setObject3dObjectKeys[i] %>" onclick="cancelObject3dSetName('<%- setObject3dObjectKeys[i] %>');" value="세트명 변경 취소" style="display:none;"/>
+                                    <input type="button" onclick="changeObject3dSetFile('<%- setObject3dObjectKeys[i] %>', 'object3d');" value="변경"/>
+                                    <input type="button" class="object3d_set_remove" hbz-file-id="<%- setObject3dObjectKeys[i] %>" onclick="removeFileSet('<%- setObject3dObjectKeys[i] %>', 'object3d');" value="삭제" /> 
+                                </td>
+                            </tr>
+                            <%    
+                        }
+                    } else { %>
+                        <tr>
+                            <td colspan="3">파일이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </table>
+            </td>
+        </tr>
+        <tr> 
+            <th>재질</th>
+            <td>
+                <table>
+                    <% 
+                    if(materialFile != null && materialFile.length > 0) {
+                        for(var i=0;i<materialFile.length;i++) {
+                            let uniqueKey = materialFile[i].remark;
+                            if(setMaterialObject[uniqueKey] == null) { setMaterialObject[uniqueKey] = new Object(); }
+                            setMaterialObject[uniqueKey].name = materialFile[i].remark;
+                            if( setMaterialObject[uniqueKey].files == null) { setMaterialObject[uniqueKey].files = new Object(); }
+                            setMaterialObject[uniqueKey].files[materialFile[i].fileDesc] = materialFile[i];
+                        }
+                    
+                        let setMaterialObjectKeys = Object.keys(setMaterialObject);
+                        for(var i=0;i<setMaterialObjectKeys.length;i++) { 
+                            let setMaterial = setMaterialObject[setMaterialObjectKeys[i]].files;
+                            let setMaterialKeys = Object.keys(setMaterial); %>
+                            <tr class="material_<%- setMaterialObjectKeys[i] %>">
+                                <th>세트명</th>
+                                <th>
+                                    <span class="material_set_name_view" hbz-file-id="<%- setMaterialObjectKeys[i] %>"><%- setMaterialObject[setMaterialObjectKeys[i]].name %></span>
+                                    <input class="material_set_name_input EngNumInput" hbz-file-id="<%- setMaterialObjectKeys[i] %>" type="text" style="display:none"/>
+                                </th>
+                                <th>
+                                    <input type="button" class="material_set_name_change" hbz-file-id="<%- setMaterialObjectKeys[i] %>" onclick="changeMaterialSetName('<%- setMaterialObjectKeys[i] %>');" value="세트명 변경"/>
+                                    <input type="button" class="material_set_name_cancel" hbz-file-id="<%- setMaterialObjectKeys[i] %>" onclick="cancelMaterialSetName('<%- setMaterialObjectKeys[i] %>');" value="세트명 변경 취소" style="display:none;"/>
+                                    <input type="button" class="material_set_remove" hbz-file-id="<%- setMaterialObjectKeys[i] %>" onclick="removeFileSet('<%- setMaterialObjectKeys[i] %>', 'material');" value="세트 삭제" /> 
+                                </th>
+                            </tr>
+                        <%
+                            for(var j=0;j<materialFileDescArray.length;j++) { 
+                                let file = null; %>
+                                <tr class="material_<%- setMaterialObjectKeys[i] %>">
+                                    <td><%- fileDescOption[materialFileDescArray[j]] %></td>
+                                    <% for(var k=0;k<setMaterialKeys.length;k++) { 
+                                        if(setMaterialKeys[k] == materialFileDescArray[j]) { 
+                                            file = setMaterial[setMaterialKeys[k]];
+                                        }
+                                    } %>
+                                    <td> 
+                                        <% if(file != null) { %>
+                                            <a href="javascript:downloadFile('<%- file.fileKey %>');" hbz-file-id="<%- setMaterialObjectKeys[i] %>" hbz-file-desc="<%- file.fileDesc %>" class="fileDownloadView"><%- file.orginName %></a>
+                                        <% } else { %> 
+                                            <span hbz-file-id="<%- setMaterialObjectKeys[i] %>" hbz-file-desc="<%- materialFileDescArray[j] %>" class="fileNameView">파일정보 없음</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <input type="button" onclick="changeMaterialSetFile('<%- setMaterialObjectKeys[i] %>', '<%- materialFileDescArray[j] %>');" value="변경"/>
+                                        <input type="button" onclick="removeMaterialFile('<%- setMaterialObjectKeys[i] %>', '<%- materialFileDescArray[j] %>');" value="삭제"  class="object3d_set_remove"/> 
+                                    </td>
+                                </tr>
+                            <%    
+                            }
+                        }
+                    } else { %>
+                        <tr>
+                            <td colspan="3">파일이 없습니다.</td>
+                        </tr>
+                    <% } %>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <% } %>   
+
+<div id="UploadObject3dPopup" style="display:none;">
+	<iframe id="UploadObject3dFrame" src="/basecar/popup/upload3dObject" style="width:100%;height:95%;border:0"></iframe>         
+</div>
+<div id="UploadMaterialPopup" style="display:none;">
+	<iframe id="UploadMaterialFrame" src="/basecar/popup/uploadMaterial" style="width:100%;height:95%;border:0"></iframe>         
+</div>
+<div id="UploadFilePopup" style="display:none;">
+	<iframe id="UploadFileFrame" src="/file/popup/upload/" style="width:100%;height:95%;border:0"></iframe>         
+</div>
+<div id="ChangeFilePopup" style="display:none;">
+	<iframe id="ChangeFileFrame" src="/file/popup/upload/change" style="width:100%;height:95%;border:0"></iframe>         
+</div>
+<form id="FileDeleteForm" method="post" />
+<script>    
+    var object3dFileObject = <%- JSON.stringify(setObject3dObject) %>;
+    var materialFileObject = <%- JSON.stringify(setMaterialObject) %>;
+</script>

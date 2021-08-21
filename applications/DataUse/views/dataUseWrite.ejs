@@ -1,0 +1,166 @@
+
+<script src="/assets/js/fileUpload/upload.js"></script>
+
+<script>
+    var formCmd = '<%- cmd %>';
+    $(function() {
+        
+        $("#writeDateuseForm").validate({
+            submitHandler: function() {
+                var message = formCmd == 'update' ? '수정' : '등록';
+                if(formCmd == 'update') { 
+                    writeDateuseForm.action = '/data/write/update'; 
+                    if(checkExistDatauseRemark($("[name='datauseVersion'").val())) {
+                        alert('이미 동일한 버전이 등록되어있습니다.');
+                        return;
+                    }
+                }
+
+                if($("[name='program']").val() != '' && $("[name='datauseVersion']").val() == '') {
+                    alert('프로그램 버전을 입력하세요.');
+                    return;
+                }
+
+                if(confirm(message + '하시겠습니까?')) {
+                    return true;
+                }
+
+                return false;
+            },
+            rules: {
+                datauseSj: {
+                    required : true,
+                    rangelength: [2, 20]
+                },
+                datauseDev: {
+                    required : true,
+                    rangelength: [2, 30]
+                },
+                datauseCn: {
+                    required : true,
+                    rangelength: [2, 100]
+                }
+                <% if(cmd == 'write') { %>
+                    , program: {
+                        required : true
+                    },
+                    thumbnail: {
+                        required : true
+                    }
+                <% } %>
+            },
+            messages : {
+                
+            }
+        });
+
+        $('#btn_delete').click(function (e) {
+            if(!confirm('데이터를 삭제 하시겠습니까?')) { return; };
+
+            $.post('/data/delete/'+ $(this).attr('datause-key') +'?_method=delete', {}, function (res) {
+                if(!res.result) {
+                    alert('데이터 삭제 중 이상 발생');
+                    return;
+                }
+
+                alert('데이터 삭제가 완료 되었습니다.');
+                location.href = '/data';
+
+            }).fail(function () {
+                alert('데이터 삭제 중 오류 발생');
+            });
+        });
+    });
+
+    function checkExistDatauseRemark(remark) {
+        var isExistDatauseRemark = false;
+        $.ajax({
+            url: '/data/data/view/' + '<%- datauseInfo.datauseKey %>', 
+            async: false,
+            success: function(data) {
+                $.each(data.fileList, function(i, iv) {
+                    if(iv.remark == remark) { isExistDatauseRemark = true; }
+                });
+            },
+            fail: function() {
+                alert('데이터를 가져오는 중에 오류가 발생했습니다.');
+            }
+        });
+
+        return isExistDatauseRemark;
+    }
+
+    function moveToDatauseList() {
+        location.href = '/data';
+    }
+
+</script>
+<form id="writeDateuseForm" action="/data/write/" method="post" enctype="multipart/form-data">
+ <div class="board_list"> 
+    <input type="hidden" name="datauseKey" value="<%- datauseInfo.datauseKey %>"/>
+    <table>
+        <tr>
+            <th>이름</th>
+            <td><input type="text" name="datauseSj" value="<%- datauseInfo.datauseSj %>"/></td>
+        </tr>
+        <tr>
+            <th>개발사</th>
+            <td><input type="text" name="datauseDev" value="<%- datauseInfo.datauseDev %>"/></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td><input type="text" name="datauseCn" value="<%- datauseInfo.datauseCn %>"/></td>
+        </tr>
+        <tr>
+            <th>배포</th>
+            <td>
+				<input type="text" name="datauseVersion" style="width: 10px" placeholder="버전"/>
+                <input type="file" name="program"/>
+            </td>
+		</tr>
+        <tr>
+            <th>썸네일</th>
+            <td>
+                <input type="file" name="thumbnail"/>
+            </td>
+		</tr>
+    </table>
+    <p class="text-center">
+        <input type="submit" class="btn btn-primary" value="등록" >
+        <% if(userInfo != undefined && ( userInfo.userType == 'A' || userInfo.userId == datauseInfo.createId) ) { %>
+			<input type="button" id="btn_delete" class="btn btn-danger" datause-key="<%- datauseInfo.datauseKey %>" value="삭제"/>
+		<% } %>
+        <input type="button" class="btn btn-info" value="목록" onclick="moveToDatauseList();">
+    </p>
+</div>
+</form>
+
+<% if(cmd == 'update') { %>
+    <br/>
+    <div class="popup_box text-left">
+        <strong>업로드 된 파일들</strong><br/>
+    </div>
+    <table>
+        <tr>
+            <th>릴리즈 내역</th>
+            <td>
+                <table>
+                    <tr>
+                        <th>버전</th>
+                        <th>파일명</th>
+                        <th>최종수정일시</th>
+                    </tr>
+                    <% for(var i=0;i<fileList.length;i++) { 
+                        if(fileList[i].fileDesc != 'program') { continue; }
+                    %>
+                        <tr>
+                            <td><%- fileList[i].remark %></td>
+                            <td><a href="/data/download/<%- datauseInfo.datauseKey %>/<%- fileList[i].fileKey %>"><%- fileList[i].orginName %></a></td>
+                            <td><%- fileList[i].updateDt %></td>
+                        </tr>
+                    <% } %>
+                </table>
+            </td>
+        </tr>
+    </table>
+<% } %>   

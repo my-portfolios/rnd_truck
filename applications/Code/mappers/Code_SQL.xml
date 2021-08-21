@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Code">  
+
+  <select id="getCodeList">
+    SELECT
+      CODE_KEY,
+      CATEGORY,
+      CODE_ID,
+      CODE_NM,
+      SORT_ORDER,
+      REMARK,
+      USE_YN,
+      CREATE_ID,
+      UPDATE_ID,
+      CREATE_DT,
+      UPDATE_DT
+    FROM 
+      CODE
+    WHERE 1=1
+      <if test="codeKey != null and codeKey != ''">
+        AND CODE_KEY = #{codeKey}
+      </if>
+      <if test="category != null and category != ''">
+        AND CATEGORY = #{category}
+      </if>
+      <if test="codeId != null and codeId != ''">
+        AND CODE_ID = #{codeId}
+      </if>
+    ORDER BY SORT_ORDER ASC
+  </select>
+
+  <insert id="insertCodeList">
+    INSERT INTO CODE (
+      CATEGORY,
+      CODE_ID,
+      CODE_NM,
+      SORT_ORDER,
+      REMARK,
+      USE_YN,
+      CREATE_ID,
+      UPDATE_ID
+    ) VALUES
+		  <foreach collection="insertList" item="item" separator=",">
+        	(#{item.category}, #{item.codeId}, #{item.codeNm}, #{item.sortOrder}, #{item.remark}, #{item.useYn}, #{item.createId}, #{item.updateId})
+    	</foreach>
+  </insert>
+
+  <update id="updateCodeList">
+    UPDATE 
+			CODE
+		SET
+      CATEGORY = #{category},
+      CODE_ID = #{codeId},
+      CODE_NM = #{codeNm},
+      SORT_ORDER = #{sortOrder},
+      REMARK = #{remark},
+      USE_YN = #{useYn},
+      UPDATE_ID = #{updateId}
+		WHERE 1=1
+			AND CODE_KEY = #{codeKey}
+  </update>
+
+  <delete id="deleteCodeList">
+    DELETE FROM 
+			CODE
+		WHERE 1=1
+			AND CODE_KEY = #{codeKey}
+  </delete>
+</mapper>

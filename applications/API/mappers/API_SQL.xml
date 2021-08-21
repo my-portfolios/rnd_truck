@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="API">  
+ 
+    <select id="selectAPIInfo">
+        SELECT
+            API_GEN_KEY,
+            API_APP_NM,
+            API_PUBLIC_KEY,
+            API_TAIL_KEY,
+            API_EXPIRE_AT,
+			API_USE_BASECAR,
+			API_USE_EQUIPMENT,
+			API_USE_PRODCAR,
+			API_USE_USER,
+            USE_YN,
+            CREATE_ID,
+            UPDATE_ID,
+			DATE_FORMAT(CREATE_DT, '%Y-%m-%d %H:%i:%s') CREATE_DT,
+			DATE_FORMAT(UPDATE_DT, '%Y-%m-%d %H:%i:%s') UPDATE_DT
+        FROM 
+            API_GEN_LIST
+        WHERE 1=1
+            <if test="apiGenKey != null and apiGenKey != ''">
+                AND API_GEN_KEY = #{apiGenKey}
+            </if>
+            <if test="apiAppNm != null and apiAppNm != ''">
+                AND API_APP_NM = #{apiAppNm}
+            </if>
+            <if test="apiPublicKey != null and apiPublicKey != ''">
+                AND API_PUBLIC_KEY = #{apiPublicKey}
+            </if>
+            <if test="apiTailKey != null and apiTailKey != ''">
+                AND API_TAIL_KEY = #{apiTailKey}
+            </if>
+            <if test="apiExpireAt != null and apiExpireAt != ''">
+                AND API_EXPIRE_AT >= #{apiExpireAt}
+            </if>
+            <if test="useYn != null and useYn != ''">
+                AND USE_YN = #{useYn}
+            </if>
+            <if test="createId != null and createId != ''">
+                AND CREATE_ID = #{createId}
+            </if>
+    </select>
+
+    <insert id="insertAPIInfo">
+        INSERT INTO API_GEN_LIST (
+            API_APP_NM,
+            API_PUBLIC_KEY,
+            API_TAIL_KEY,
+            API_EXPIRE_AT,
+			API_USE_BASECAR,
+			API_USE_EQUIPMENT,
+			API_USE_PRODCAR,
+			API_USE_USER,
+            USE_YN,
+            CREATE_ID,
+            UPDATE_ID
+        ) VALUES (
+            #{apiAppNm},
+            'NOT_GENERATED_API_KEY',
+            'NOT_GENERATED_API_KEY',
+            NOW(),
+			#{apiUseBasecar},
+			#{apiUseEquipment},
+			#{apiUseProdcar},
+			#{apiUseUser},
+            'N',
+            #{createId},
+            #{updateId}
+        )
+    </insert>
+
+    <update id="updateAPIInfo">
+        UPDATE 
+            API_GEN_LIST
+        SET
+            <if test="apiAppNm != null and apiAppNm != ''">
+                API_APP_NM = #{apiAppNm},
+            </if>
+            <if test="apiPublicKey != null and apiPublicKey != ''">
+                API_PUBLIC_KEY = #{apiPublicKey},
+            </if>
+            <if test="apiTailKey != null and apiTailKey != ''">
+                API_TAIL_KEY = #{apiTailKey},
+            </if>
+            <if test="apiExpireAt != null and apiExpireAt != ''">
+                API_EXPIRE_AT = #{apiExpireAt},
+            </if>
+            <if test="useYn != null and useYn != ''">
+                USE_YN = #{useYn},
+            </if>
+            UPDATE_ID = #{updateId}
+        WHERE 1=1
+            AND API_GEN_KEY = #{apiGenKey}
+    </update>
+
+
+	<delete id="deleteAPIInfo">
+        DELETE FROM
+			API_GEN_LIST
+        WHERE 1=1
+            AND API_GEN_KEY = #{apiGenKey}
+    </update>
+	
+</mapper>

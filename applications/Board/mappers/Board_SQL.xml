@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Board">  
+
+  <delete id="deleteBoard">
+    DELETE FROM 
+      BOARD 
+    WHERE
+       BOARD_KEY = #{BOARD_KEY}
+  </delete>
+
+  <update id="incrementReadCount">
+    UPDATE BOARD 
+    SET 
+      READ_CNT = READ_CNT + 1 
+    WHERE 
+      BOARD_KEY = #{BOARD_KEY}
+  </update>
+
+  <select id="selectNoticeFiles">
+    SELECT 
+      *
+    FROM 
+      FILE 
+    WHERE 
+      USE_TYPE = 'BOARD' 
+      AND USE_VAL = #{BOARD_KEY} 
+  </select>
+
+  <select id="selectNoticeInfo">
+    WITH USERINFO AS ( 
+      SELECT 
+        T1.USER_TYPE, 
+        T1.USER_KEY, 
+        T1.USER_ID, 
+        T2.USER_NM, 
+        T2.USER_NICK 
+      FROM
+        USER T1
+        LEFT JOIN 
+        USER_INFO T2 
+        ON T1.USER_KEY = T2.USER_KEY
+    ), ENTPRINFO AS (
+      SELECT 
+        T1.USER_ID, 
+        T2.ENTPR_NM 
+      FROM 
+        USER T1 
+        LEFT JOIN 
+        ENTPR_INFO T2 
+        ON T1.USER_KEY = T2.USER_KEY
+    )
+    SELECT 
+      T1.BOARD_KEY, 
+      T1.BOARD_TYPE, 
+      T1.BOARD_TITLE, 
+      T1.BOARD_CONTENT, 
+      T1.READ_CNT, 
+      T1.CREATE_ID, 
+      DATE_FORMAT(T1.CREATE_DT, '%Y-%m-%d') AS CREATE_DT, 
+      T2.USER_TYPE, 
+      T2.USER_NICK, 
+      T3.ENTPR_NM 
+    FROM 
+      BOARD T1 
+      LEFT JOIN 
+      USERINFO T2 
+      ON T1.CREATE_ID = T2.USER_ID 
+      LEFT JOIN 
+      ENTPRINFO T3 
+      ON T1.CREATE_ID = T3.USER_ID
+    WHERE 1=1
+      AND BOARD_KEY = #{BOARD_KEY}
+  </select>
+
+  <update id="updateNoticeInfo">
+    UPDATE BOARD 
+    SET 
+      BOARD_TITLE = #{BOARD_TITLE}, 
+      BOARD_CONTENT = #{BOARD_CONTENT}, 
+      UPDATE_ID = #{token.userId}
+    WHERE 
+      BOARD_KEY = #{BOARD_KEY}
+  </update>
+
+  <insert id="insertNoticeInfo">
+    INSERT INTO BOARD 
+      ( BOARD_TYPE, BOARD_TITLE, BOARD_CONTENT, CREATE_ID, UPDATE_ID )
+    VALUES
+      ( #{BOARD_TYPE}, #{BOARD_TITLE}, #{BOARD_CONTENT}, #{token.userId}, #{token.userId} )
+  </insert>
+
+  <select id="selectNoticeTotalCnt">
+    WITH USERINFO AS ( 
+      SELECT 
+        T1.USER_KEY, 
+        T1.USER_ID, 
+        T2.USER_NM, 
+        T2.USER_NICK 
+      FROM
+        USER T1
+        LEFT JOIN 
+        USER_INFO T2 
+        ON T1.USER_KEY = T2.USER_KEY
+    )
+    SELECT 
+      COUNT(1) AS TOTAL_CNT
+    FROM 
+      BOARD T1
+      LEFT JOIN 
+      USERINFO T2 
+      ON T1.CREATE_ID = T2.USER_ID 
+    <where>
+      <if test="BOARD_TYPE != ''">
+        AND BOARD_TYPE = #{BOARD_TYPE}
+      </if>
+      <if test="searchValue != ''">
+        <choose>
+          <when test="searchType == 'T'">
+            AND BOARD_TITLE LIKE CONCAT('%', #{searchValue}, '%')
+          </when>
+          <when test="searchType == 'C'">
+            AND BOARD_CONTENT LIKE CONCAT('%', #{searchValue}, '%')
+          </when>
+          <otherwise>
+            AND USER_NICK LIKE CONCAT('%', #{searchValue}, '%')
+          </otherwise>
+        </choose>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectNoticeList">
+    WITH USERINFO AS ( 
+      SELECT 
+        T1.USER_KEY, 
+        T1.USER_TYPE, 
+        T1.USER_ID, 
+        T2.USER_NM, 
+        T2.USER_NICK 
+      FROM
+        USER T1
+        LEFT JOIN 
+        USER_INFO T2 
+        ON T1.USER_KEY = T2.USER_KEY
+    ), ENTPRINFO AS (
+      SELECT 
+        T1.USER_KEY, 
+        T1.USER_ID, 
+        T2.ENTPR_NM
+      FROM
+        USER T1
+        LEFT JOIN 
+        ENTPR_INFO T2 
+        ON T1.USER_KEY = T2.USER_KEY
+    )
+    SELECT 
+      T1.BOARD_KEY, 
+      T1.BOARD_TYPE, 
+      T1.BOARD_TITLE, 
+      T1.BOARD_CONTENT, 
+      T1.READ_CNT, 
+      DATE_FORMAT(T1.CREATE_DT, '%Y-%m-%d') AS CREATE_DT, 
+      T2.USER_TYPE, 
+      T2.USER_NICK, 
+      T3.ENTPR_NM, 
+      (SELECT COUNT(1) FROM FILE WHERE USE_TYPE='BOARD' AND USE_VAL = T1.BOARD_KEY) AS FILE_CNT 
+    FROM 
+      BOARD T1 
+      LEFT JOIN 
+      USERINFO T2 
+      ON T1.CREATE_ID = T2.USER_ID
+      LEFT JOIN
+      ENTPRINFO T3
+      ON T1.CREATE_ID = T3.USER_ID
+    <where>
+      <if test="BOARD_TYPE != undefined and BOARD_TYPE != ''">
+        AND BOARD_TYPE = #{BOARD_TYPE}
+      </if>
+      <if test="searchValue != undefined and searchValue != ''">
+        <choose>
+          <when test="searchType == 'T'">
+            AND BOARD_TITLE LIKE CONCAT('%', #{searchValue}, '%')
+          </when>
+          <when test="searchType == 'C'">
+            AND BOARD_CONTENT LIKE CONCAT('%', #{searchValue}, '%')
+          </when>
+          <otherwise>
+            AND USER_NICK LIKE CONCAT('%', #{searchValue}, '%')
+          </otherwise>
+        </choose>
+      </if>
+    </where>
+    ORDER BY
+      T1.CREATE_DT DESC
+    LIMIT
+      ${pagination.limitIndex}, ${pagination.rowsPerPage}
+  </select>
+</mapper>

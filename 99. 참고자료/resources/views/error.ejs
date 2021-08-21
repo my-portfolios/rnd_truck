@@ -1,0 +1,17 @@
+<h1>
+    <%= status %>
+    <% switch(status) { 
+        case 404: %>
+            Not Found
+        <% break; %>
+        <% case 500: %>
+            Internal Error
+        <% break; %>
+        <% default: %>
+            Unknown Error
+        <% break; %>
+    <% } %>
+</h1>
+<p><%= message %></p>
+An error has occurred on the current page. Please check the stack trace for more information.
+<pre><%= stack %></pre> 

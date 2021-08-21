@@ -1,0 +1,64 @@
+<script src="/assets/js/fileUpload/upload.js" ></script>
+<script>
+	var parentElId = '';
+	var fileUploadName = 'object3d';
+	var availableFileExt = ['obj', 'fbx'];
+	var fileUploader = new ForwardFileUploader({});
+	if(availableFileExt != null) { availableFileExt.forEach(function(ext, index) { availableFileExt[index] = ext.toUpperCase(); }); }
+
+	function creationComplete(elId) {
+		parentElId = elId;
+		$("#file").attr('accept', availableFileExt.map(function(data) { return '.' + data; }));
+	}
+
+	function uploadFile() {
+		var file = $("#file").clone();
+		var fileRemark = $("#fileRemark").val();
+
+		$(file).attr('name', fileUploadName + '_File_'+fileRemark);
+		$(file).attr('class', fileUploadName + '_' + fileRemark); 
+		$(file).css('display', 'none');
+
+		if(fileRemark == "") {
+			alert('오브젝트 명칭을 입력하세요.')
+			return;
+		} else if(fileRemark.length >= 20) {
+			alert('오브젝트 명칭은 20자 까지 입력 가능합니다.')
+			return;
+		} else if($(file).val() == '') {
+			alert('파일을 등록하세요.')
+			return;
+		} else if(availableFileExt.indexOf( fileUploader.getFileExt($(file)[0]) ) == -1) { 
+			alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(availableFileExt).replace(/"/g, "") + '입니다.');
+			return;
+		} else if(parent.object3dNameArray.indexOf(fileRemark) != -1) {
+			alert( '3D오브젝트 명칭 이름이 중복됩니다.');
+			return;
+		}
+
+		var tr = $('<tr>', {class: fileUploadName + '_' + fileRemark});
+		var td = $('<td>');		
+		tr.append($('<td>', {text: fileRemark}));
+		tr.append($('<td>', {text: fileUploader.getFileName($(file)[0])}));
+		td.append($('<input>', {type: 'button', value: '삭제', 'hbz-data-desc': 'object3d', 'hbz-data-remark': fileRemark, 'hbz-data-name': fileUploadName+'_'+fileRemark, onclick: 'removeNewFile(this);' }));
+		tr.append(td);
+		$('#'+parentElId, parent.document).append(tr);
+		$('#'+parentElId, parent.document).append(file);
+		$('#'+parentElId, parent.document).append($("<input>", {type: 'hidden', class: fileUploadName + '_' + fileRemark, name: fileUploadName + '_Remark_'+fileRemark, value: fileRemark}));
+
+		parent.fileCnt[fileUploadName]++;
+		parent.object3dNameArray.push(fileRemark);
+
+		if(parent.reloadComboboxObject3dDefaultSet != null) { parent.reloadComboboxObject3dDefaultSet(); }
+		parent.uploadObject3dPopup.dialog("close");
+	}
+</script>
+
+<div class="popup_box_top">
+	<input type="text" id="fileRemark" class="EngNumInput" placeholder="오브젝트 명칭" />
+</div>
+<div class="popup_box_bottom"><input type="file" id="file" /></div>
+* 오브젝트명과 세트명은 알파벳과 숫자만 입력가능합니다.
+<div class="text-center" style="margin-top: 20px;">
+	<input type="button" value="업로드" onclick="uploadFile();"/>
+</div>

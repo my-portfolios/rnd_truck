@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DataUse">  
+
+  <select id="selectDatauseInfo">
+    SELECT  
+      DATAUSE_KEY,
+      DATAUSE_SJ,
+      DATAUSE_CN,
+      DATAUSE_DEV,
+      CREATE_ID,
+      UPDATE_ID,
+      DATE_FORMAT(CREATE_DT, '%Y-%m-%d %H:%i:%s') CREATE_DT,
+			DATE_FORMAT(UPDATE_DT, '%Y-%m-%d %H:%i:%s') UPDATE_DT
+    FROM 
+      DATAUSE
+    WHERE 1=1
+      <if test="datauseKey != null and datauseKey != ''">
+          AND DATAUSE_KEY = #{datauseKey}
+      </if>
+      <if test="pagination != null and pagination.limitIndex != null and pagination.rowsPerPage != null">
+          LIMIT ${pagination.limitIndex}, ${pagination.rowsPerPage}
+      </if>
+  </select>
+
+   <select id="selectDatauseInfoCnt">
+    SELECT  
+      COUNT(*) TOTAL_CNT
+    FROM 
+      DATAUSE
+    WHERE 1=1
+  </select>
+
+   <insert id="insertDatauseInfo">
+    INSERT INTO DATAUSE (
+      DATAUSE_SJ,
+      DATAUSE_CN,
+      DATAUSE_DEV,
+      CREATE_ID,
+      UPDATE_ID
+    ) VALUES (
+      #{datauseSj},
+      #{datauseCn},
+      #{datauseDev},
+      #{createId},
+      #{updateId}
+    )
+  </insert>
+
+  <update id="updateDatauseInfo">
+    UPDATE 
+      DATAUSE
+    SET
+      <if test="datauseSj != null and datauseSj != ''">
+        DATAUSE_SJ = #{datauseSj},
+      </if>
+      <if test="datauseCn != null and datauseCn != ''">
+        DATAUSE_CN = #{datauseCn},
+      </if>
+      <if test="datauseDev != null and datauseDev != ''">
+        DATAUSE_DEV = #{datauseDev},
+      </if>
+      UPDATE_ID = #{updateId}
+    WHERE 
+      DATAUSE_KEY = #{datauseKey}
+  </update>
+
+  <delete id="deleteDatauseInfo">
+    DELETE FROM
+      DATAUSE
+    WHERE 
+      DATAUSE_KEY = #{datauseKey}
+  </delete>
+
+  
+</mapper>

@@ -1,0 +1,14 @@
+{
+    "defaultDatabase": "mariadb",
+    "connectionInfo": {
+        "mariadb": {
+            "host": "192.168.24.103",
+            "port": "3306",
+            "username": "root",
+            "password": "gbqlwmdkdlTlxl1999#",
+            "database": "camping",
+            "timezone": "Etc/GMT+9",
+            "format": { "language": "sql" }
+        }
+    }
+}

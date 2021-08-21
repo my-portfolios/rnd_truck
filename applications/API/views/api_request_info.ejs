@@ -1,0 +1,149 @@
+
+<div class="cnt_box">
+	<p class="content_title"> 인증 가능한 요청 만들기</p>
+	<ul>
+		<li>캠핑카 포털은 REST API를 사용하여 XML 결과 값을 반환합니다.</li>
+		<li>REST API 요청시, 발급받은 API 키를 HTTP Header의 API-AUTHORIZATION-KEY에 담아 요청을 전송합니다.</li>
+	</ul>
+
+	<p class="content_title">사용가능한 HTTP 메서드</p>
+	<div>
+		<table>
+			<tr>
+				<th>메서드</th>
+				<th>기능</th>
+			</tr>
+			<tr>
+				<td>GET</td>
+				<td>존재하는 데이터를 조회합니다.</td>
+			</tr>
+			<tr>
+				<td>POST</td>
+				<td>데이터를 신규로 생성하거나, 보안을 중요시하는 데이터를 조회합니다.</td>
+			</tr>
+			<tr>
+				<td>PUT</td>
+				<td>존재하는 데이터를 수정합니다.</td>
+			</tr>
+			<tr>
+				<td>DELETE</td>
+				<td>존재하는 데이터를 삭제합니다.</td>
+			</tr>
+		</table>
+	</div>
+	<br>
+
+	<p class="content_title"> API 요청 예시</p>
+	<ul>
+		<li>
+			<p>C#</p>
+			<pre>
+using System;
+using System.IO;
+using System.Net;
+
+namespace Main
+{
+	class Program
+	{
+		public static void Main(string[] args)
+		{
+			string API_KEY = "YOUR_API_KEY_HERE";
+			string REQUEST_URL = "http://camping-car.co.kr/openapi/data/basecar/list";
+			
+			try
+			{
+				WebClient client = new WebClient();
+				client.Headers.Add("API-AUTHORIZATION-KEY", API_KEY);
+				using (Stream data = client.OpenRead(REQUEST_URL))
+				{
+					using (StreamReader reader = new StreamReader(data))
+					{
+						Console.WriteLine(reader.ReadToEnd());
+
+						reader.Close();
+						data.Close();
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.ToString());
+			}
+		}
+	}
+}
+			</pre>
+		</li>
+		<li>
+			<p>Node.js</p>
+			<pre>
+const request = require('request');
+
+const API_KEY = "YOUR_API_KEY_HERE";
+const REQUEST_URL = "http://camping-car.co.kr/openapi/data/basecar/list";
+
+const options = {
+	method: "GET",
+	url: REQUEST_URL,
+	headers: {'API-AUTHORIZATION-KEY': API_KEY},
+};
+
+request(options, (error, response, body) => {
+	if (error) { throw new Error(error); }
+	console.log(body);
+})
+			</pre>
+		</li>
+		<li>
+			<p>Java</p>
+			<pre>
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+
+public class Main {
+
+	public static void main(String[] args) {
+		String API_KEY = "YOUR_API_KEY_HERE";
+		String REQUEST_URL = "http://camping-car.co.kr/openapi/data/basecar/list";
+
+		try {
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpGet request = new HttpGet(REQUEST_URL);
+			request.addHeader("API-AUTHORIZATION-KEY", API_KEY);
+
+			HttpResponse response = client.execute(request);
+			HttpEntity entity = response.getEntity();
+
+			System.out.println(EntityUtils.toString(entity, "UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+			</pre>
+		</li>
+		<li>
+			<p>Python</p>
+			<pre>
+import requests
+
+API_KEY = 'YOUR_API_KEY_HERE'
+REQUEST_URL = 'http://camping-car.co.kr/openapi/data/basecar/list'
+
+res = requests.get(REQUEST_URL, headers={"API-AUTHORIZATION-KEY": API_KEY})
+
+print(res.text)
+			</pre>
+		</li>
+	</ul>
+</div>
+
+<a href="/openapi/apply"><p class="btn btn-lg btn-primary">API 신청 <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </p></a>
+<a href="/openapi/list"><p class="btn btn-lg btn-primary">API 목록 <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </p></a>

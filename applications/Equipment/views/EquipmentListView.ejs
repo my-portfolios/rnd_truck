@@ -1,0 +1,182 @@
+<script>
+    var dgMain;
+    $(function() {
+		// 장치 분류 가져오기
+        $.get('/code/data/list/equipType', function(data) {
+            ComboUtility.appendComboData($("#codeKey"), data, 'codeNm', 'codeKey', false);
+		});
+
+		$("#codeKey").change(function() {
+			var list = [ {text: '검색 조건', value: ''}, {text: '이름', value: 'equipNm'}, 
+						{text: '모델명', value: 'equipModelId'}, {text: '제조회사', value: 'equipManuId'} ];
+			$("#searchType").empty();
+			if($("#codeKey").val() == '') { ComboUtility.appendComboData($("#searchType"), list, 'text', 'value', false); return; }
+
+			$.get('/code/prop/data/list/' + $("#codeKey").val(), function(data) {
+				for(var i=0;i<data.length;i++) {
+					if(data[i].dataType != 'DATA') { list.push({text: data[i].propName, value: 'propVal' + data[i].propOrder}); }
+				}
+
+				ComboUtility.appendComboData($("#searchType"), list, 'text', 'value', false);
+			});
+		});
+		
+        dgMain = new tui.Grid({
+			el: $('#dgMain')[0],
+		    scrollX: true,
+		    scrollY: true,
+			bodyHeight: 500,
+			rowHeight: 110,
+		    rowHeaders: ['rowNum'],
+		    columns: [
+				{
+                    header: '이미지',
+			    	name: 'thumbnail',
+                    align: 'center',
+                    width: 200,
+			    	resizable: true,
+                    sortable: true,
+                    renderer: {
+                        type: TuiGridUtility.getImageRenderer
+                    }
+				},
+			    {
+			    	header: '장치 종류',
+			    	name: 'equipType',
+                    align: 'center',
+                    width: 150,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '장치명',
+			    	name: 'equipNm',
+                    align: 'center',
+                    width: 220,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '제조회사',
+			    	name: 'equipManuId',
+                    align: 'center',
+                    width: 200,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '모델명',
+			    	name: 'equipModelId',
+                    align: 'center',
+                    width: 230,
+			    	resizable: true,
+			    	sortable: true
+				},
+				{
+			    	header: '최종수정일',
+			    	name: 'updateDt',
+                    align: 'center',
+                    width: 200,
+			    	resizable: true,
+			    	sortable: true
+				},
+			    {
+			    	header: '상세'
+			    	, name: 'detailView'
+			    	, align: 'center'
+			    	, width: 100
+			    	, resizable: true
+			    	, sortable: true
+			    	, renderer: {
+			    		type: CustomButtonRenderer
+			    	}
+			    }
+			]
+		});
+		
+		searchMain();
+    });
+
+	function CustomButtonRenderer(props) {
+        var el = document.createElement('input');
+        el.type = 'button';
+        this.el = el;
+		this.el.value = "상세";
+		this.el.className = "btn btn-primary";
+        this.el.onclick = function() {
+			var rowInfo = props.grid.getRow(props.rowKey);
+			moveToEditOrDetailPage(rowInfo.equipKey);
+        }
+       
+      	this.getElement = function() {
+        	return this.el;
+      	};
+	}
+
+	function moveToEditOrDetailPage(equipKey) {
+		location.href = '/equipment/view/' + equipKey;
+    }
+
+    function createAction() {
+		location.href="/equipment/write/step1";
+	}
+	
+	function searchMain() {
+		$.get('/equipment/data/list/', {
+			codeKey: $("#codeKey").val(),
+			searchType: $("#searchType").val(),
+			searchValue: $("#searchValue").val()
+		}, function(data) {
+			if(data.result != null && data.result == false) {
+				alert('장치 현황을 가져오는 데 실패하였습니다.');	
+			} else { dgMain.resetData(data); }
+		}).fail(function(e) {
+			alert('장치 현황을 가져오는 데 실패하였습니다.');
+		});
+	}
+
+
+	window.onpageshow = function(event) {
+		if ( event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+			$("#codeKey").val("");
+			$("#searchType").val("");
+			$("#searchValue").val("");
+		}
+	}
+</script>
+
+<!--검색영역-->
+<div class="row">
+	<div class="col-md-4 col-xs-12 text-left">
+		<div class="btn-group" role="group" aria-label="...">
+			<% if(typeof(userInfo) != 'undefined' && (userInfo.userType == 'C' || userInfo.userType == 'A')) { %>
+				<input type="button" onclick="createAction();" value="장치 등록" class="btn btn-sm btn-danger" />
+			<% } %>
+		</div>
+  	</div>
+
+	<div class="col-md-6 col-md-offset-2 col-xs-12 div-right">
+
+		<div class="input-group">
+			<select id="codeKey">
+				<option value="">장치 분류</option>
+			</select>
+			<select id="searchType">
+				<option value="">검색 조건</option>
+				<option value="equipNm">장치명</option>
+				<option value="equipModelId">모델명</option>
+				<option value="equipManuId">제조회사</option>
+			</select>
+			
+			<span class="input-group-btn">
+				<input type="text" id="searchValue" class="form-control" placeholder="Search..." >
+				<button type="button" onclick="searchMain();" class="btn btn-primary">검색</button>
+			</span>
+		  </div>
+
+	</div>
+</div>
+<!--검색영역-->
+
+<div id="dgMain"></div>
+

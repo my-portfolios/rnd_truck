@@ -1,0 +1,109 @@
+<script>
+	$(function () {
+		$('#searchAction').click(function () {
+			$('#listForm').submit();
+		});
+
+		$('#btn_write').click(function () {
+			$('#listForm').attr('action', '/board/<%- params.BOARD_TYPE%>/write').submit();
+		});
+
+		$('[name=a_boardView]').click(function() {
+			var elem = $('<input/>', {
+				type: 'hidden',
+				name: 'BOARD_KEY',
+				value: $(this).attr('board_key')
+			});
+					
+			$('#listForm').append(elem).attr('action', '/board/<%- params.BOARD_TYPE%>/view').submit();
+		});
+	});
+</script>
+
+<form id="listForm" action="/board/<%- params.BOARD_TYPE%>" method="POST">
+	<input type="hidden" name="BOARD_TYPE" value="<%- params.BOARD_TYPE%>">
+
+<!--검색영역-->
+<div class="row">
+	<% if(params.BOARD_TYPE != 'notice' || (userInfo != undefined && userInfo.userType === 'A')) { %>
+		<div class="col-md-4 col-xs-12 text-left">
+			<div class="btn-group" role="group" aria-label="...">
+			<button type="button" id="btn_write" class="btn btn-sm btn-danger">등록</button>
+			</div>
+		</div>
+	<% } %>
+
+	<div class="col-md-6 col-md-offset-2 col-xs-12 div-right">
+		<div class="input-group">
+			<select id="searchType" name="searchType">
+				<option value="T">제목</option>
+				<option value="C">내용</option>
+				<option value="O">작성자</option>
+			</select>
+			<script>
+				let sType = '<%- params.searchType%>';
+				if(sType == '') {
+					$('#searchType option:eq(0)').attr('selected', true);
+				} else {
+					$('#searchType').val(sType);
+				}
+			</script>
+
+			<span class="input-group-btn">
+				<input type="text" id="searchValue" name="searchValue" class="form-control" placeholder="Search..." value="<%- params.searchValue%>">
+				<button type="submit" id="searchAction" class="btn btn-primary">검색</button>
+			</span>
+		</div>
+
+	</div>
+</div>
+<!--검색영역-->
+
+<div class="board_list">
+<!-- 목록영역 -->
+<table class="table-striped" summary="게시글의 내역에 대한 목록을 출력합니다.">
+	<colgroup>
+		<col style="width: 5%;">
+		<col style="width: 70%;">
+		<col style="width: 10%;">
+		<col style="width: 10%;">
+		<col style="width: 5%;">
+	</colgroup>
+<thead>
+	<tr>
+		<th class="center" style="width: 5%;">번호</th>		
+		<th class="center">제목</th>
+		<th class="center">작성자</th>
+		<th class="center">등록일</th>
+		<th class="center" style="width: 5%;">조회수</th>
+	</tr>
+</thead>
+<tbody>
+	<% noticeList.forEach(function (v, i) { %>
+		<tr>
+			<td class="center"><%- v.BOARD_KEY%></td>
+			<td>
+				<a name="a_boardView" href="#" board_key="<%- v.BOARD_KEY%>"><%- v.BOARD_TITLE%> [<%- v.FILE_CNT%>]</a>
+			</td>
+			<td class="center">
+        <% if(v.USER_TYPE == 'C') { %>
+          <%- v.ENTPR_NM%>
+        <% } else { %>
+          <%- v.USER_NICK%>
+        <% } %>
+      </td>
+			<td class="center"><%- v.CREATE_DT%></td>
+			<td class="center"><%- v.READ_CNT%></td>		
+		</tr>
+	<% }); %>
+
+</tbody>
+</table>
+
+	<!-- Pagination -->
+	<%- pagination%>
+	<!-- Pagination -->
+
+</div>
+
+</form>

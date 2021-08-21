@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Basecar">
+    <select id="getBaseCarList">
+        SELECT 
+			BASECAR_KEY,
+			BASECAR_NM,
+			BASECAR_MODEL_ID,
+			BASECAR_MANU_ID,
+			BASECAR_PRICE,
+			BASECAR_OIL_RATIO,
+			BASECAR_PERSON_CNT,
+			BASECAR_PROD_DATE,
+			BASECAR_STANDARD,
+			OBJECT3D_DEFAULT_SET,
+			MATERIAL_DEFAULT_SET,
+			CREATE_ID,
+			UPDATE_ID,
+			CREATE_DT,
+			UPDATE_DT
+		FROM
+			BASE_CAR
+		WHERE 1=1
+			<if test="basecarKey != null and basecarKey != ''">
+				AND BASECAR_KEY = #{basecarKey}
+			</if>
+			<if test="basecarModelId != null and basecarModelId != ''">
+				AND BASECAR_MODEL_ID = #{basecarModelId}
+			</if>
+			<if test="createId != null and createId != ''">
+				AND CREATE_ID = #{createId}
+			</if>
+			<if test="searchType != null and searchType != '' and searchValue != null and searchValue != ''">
+				<choose>
+					<when test="searchType == 'basecarNm'">AND BASECAR_NM LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'basecarModelId'">AND BASECAR_MODEL_ID LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'basecarManuId'">AND BASECAR_MANU_ID LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'basecarProdDate'">AND BASECAR_PROD_DATE LIKE '%' #{searchValue} '%'</when>
+				</choose>
+			</if>
+		ORDER BY CREATE_DT DESC
+    </select>
+
+	<insert id="insertBasecarInfo">
+		INSERT INTO BASE_CAR (
+			BASECAR_NM,
+			BASECAR_MODEL_ID,
+			BASECAR_MANU_ID,
+			BASECAR_PRICE,
+			BASECAR_OIL_RATIO,
+			BASECAR_PERSON_CNT,
+			BASECAR_PROD_DATE,
+			BASECAR_STANDARD,
+			OBJECT3D_DEFAULT_SET,
+			MATERIAL_DEFAULT_SET,
+			CREATE_ID,
+			UPDATE_ID
+		) VALUES (
+			#{basecarNm},
+			#{basecarModelId},
+			#{basecarManuId},
+			#{basecarPrice},
+			#{basecarOilRatio},
+			#{basecarPersonCnt},
+			#{basecarProdDate},
+			#{basecarStandard},
+			#{object3dDefaultSet},
+			#{materialDefaultSet},
+			#{createId},
+			#{updateId}
+		)
+	</insert>
+
+	<update id="updateBasecarInfo">
+		UPDATE 
+			BASE_CAR
+		SET
+			<if test="basecarNm != null and basecarNm != ''">
+				BASECAR_NM = #{basecarNm},
+			</if>
+			<if test="basecarModelId != null and basecarModelId != ''">
+				BASECAR_MODEL_ID = #{basecarModelId},
+			</if>
+			<if test="basecarManuId != null and basecarManuId != ''">
+				BASECAR_MANU_ID = #{basecarManuId},
+			</if>
+			<if test="basecarPrice != null and basecarPrice != ''">
+				BASECAR_PRICE = #{basecarPrice},
+			</if>
+			<if test="basecarOilRatio != null and basecarOilRatio != ''">
+				BASECAR_OIL_RATIO = #{basecarOilRatio},
+			</if>
+			<if test="basecarPersonCnt != null and basecarPersonCnt != ''">
+				BASECAR_PERSON_CNT = #{basecarPersonCnt},
+			</if>
+			<if test="basecarProdDate != null and basecarProdDate != ''">
+				BASECAR_PROD_DATE = #{basecarProdDate},
+			</if>
+			<if test="basecarStandard != null and basecarStandard != ''">
+				BASECAR_STANDARD = #{basecarStandard},
+			</if>
+			<if test="object3dDefaultSet != null and object3dDefaultSet != ''">
+				OBJECT3D_DEFAULT_SET = #{object3dDefaultSet},
+			</if>
+			<if test="materialDefaultSet != null and materialDefaultSet != ''">
+				MATERIAL_DEFAULT_SET = #{materialDefaultSet},
+			</if>
+			UPDATE_ID = #{updateId}
+		WHERE 1=1
+			AND BASECAR_KEY = #{basecarKey}
+   </update>
+
+	<delete id="deleteBasecar">
+		DELETE FROM BASE_CAR
+		WHERE 1=1
+			<if test="basecarKey != null and basecarKey != ''">
+				AND BASECAR_KEY = #{basecarKey}
+			</if>
+   </delete>
+</mapper>

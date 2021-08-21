@@ -1,0 +1,76 @@
+<script src="/assets/js/fileUpload/upload.js" ></script>
+<script>
+	var parentAcceptExt = null;
+	var onSuccessFunc = null;
+	var fileUploader = new ForwardFileUploader({});
+	$(function() {
+		$("[name='uploadFile']").change(function(e) {
+			if(parentAcceptExt != null && parentAcceptExt.indexOf( fileUploader.getFileExt($(this)[0]) ) == -1) { 
+				alert( '업로드 가능한 파일 확장자는 ' + JSON.stringify(parentAcceptExt).replace(/"/g, "") + '입니다.');
+				$("[name='uploadFile']").val('');
+				return;
+			}
+		});
+	});
+
+
+	function creationComplete(useType, useVal, fileDesc, remark, acceptExt, onSuccess) {
+		$("[name='useType']").val(useType);
+		$("[name='useVal']").val(useVal);
+		$("[name='fileDesc']").val(fileDesc);
+		$("[name='remark']").val(remark);
+		if(onSuccess != null) { onSuccessFunc = onSuccess; }
+		if(acceptExt != null && Array.isArray(acceptExt)) { 
+			acceptExt.forEach(function(ext, index) { acceptExt[index] = ext.toUpperCase(); });
+			parentAcceptExt = acceptExt;
+			$("[name='uploadFile']").attr('accept', acceptExt.map(function(data) { return '.' + data; }));
+		}
+	}
+
+	function changeUploadFiles() {
+		if($("[name='uploadFile']").val() == '') {
+			alert('파일을 업로드하세요.');
+			return false;
+		}
+
+		if(confirm('파일을 변경하시겠습니까?')) {
+			$.ajax({
+				url: '/file/popup/upload', 
+				type: 'post',
+				datatype: 'json',
+				data: new FormData($('#uploadForm')[0]),
+				contentType : false,
+        		processData : false,
+				success: function(event) {
+					if(event.result == false) {
+						alert('파일을 업로드 하는 중에 오류가 발생하였습니다.');
+					} else {
+						alert('변경되었습니다.');
+						onSuccessFunc(event);
+					}
+				}
+			}).fail(function(event) {
+				alert('파일을 업로드 하는 중에 오류가 발생하였습니다.');
+			})
+		}
+
+		return false;
+	}
+</script>
+
+<form id="uploadForm">
+	<input type="hidden" name="useType" />
+	<input type="hidden" name="useVal" />
+	<input type="hidden" name="fileDesc" />
+	<input type="hidden" name="remark" />
+	<table style="width: 100%">
+		<tr>
+			<th>업로드 할 파일</th>
+			<td><input type="file" name="uploadFile" /></td>
+		</tr>
+	</table>
+
+	<div class="text-center" style="margin-top: 20px;">
+		<input type="button" value="저장" onclick="changeUploadFiles();"/>
+	</div>
+</form>

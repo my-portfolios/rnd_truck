@@ -1,0 +1,84 @@
+<script>
+
+	$(function() {
+
+		let userInfo = '<%- JSON.stringify(userInfo)%>';
+		if(userInfo != '' && JSON.parse(userInfo).userType == 'A') {
+			$.post('/user/selectUserCnt', {}, function (result) {
+				$('#userCnt').text( result[0].ENTPR_CNT );
+			});
+		}
+
+		$('[data-toggle="tooltip"]').tooltip();
+		
+	});
+</script>
+
+<!-- NAVBAR -->
+<div id="#remoCon" class="navbar-wrapper">
+	<div class="container">
+		
+	  <nav class="navbar navbar-inverse navbar-fixed-top <% if(displayLayoutName != 'home') { %> sub_navbar <% } %> ">
+		<div class="container">
+			<div class="top_menu text-right">
+			  <ul>
+				<% if(userInfo == undefined) { %>
+					<li class="bt_login"><a href="/auth/login">로그인</a></li>
+					<li><a href="/auth/join">회원가입</a></li>
+				<% } else { %>
+					<li><%- userInfo.userType == 'U' ? '일반회원' : userInfo.userType == 'C' ? '기업회원' : '시스템 운영자' %></li>
+					<li class="bt_login"><a href="/auth/logout">로그아웃</a></li>
+					<li class="bt_login"><a href="/user/userInfo">정보수정</a></li>
+					<li class="bt_login"><a href="/openapi/list">API 신청 현황</a></li>
+				<% } %>				
+				<% if(userInfo != undefined && userInfo.userType == 'A') { %>
+				<li><a href="/user/userList">회원현황</a> <a href="#" data-toggle="tooltip" data-placement="bottom" title="미승인 시공사 회원 수"><span class="badge" id="userCnt"></span></a></li>
+				<% } %>
+			  </ul>
+			</div>
+		  <div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+			  <span class="sr-only">Toggle navigation</span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			  <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/home"><img src="/assets/images/logo.png" class="img-responsive" alt="Responsive image"></a>
+		  </div>
+		  <div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<% allMenuList[0].childMenus.forEach(menu1 => { %>
+					<% let currentMenu = ''; %>
+					<% if(!menu1.options.show || !menu1.options.use) { return; } %>
+					<% if(menuInfo.isFind && menuInfo.menuList.indexOf(menu1.name) != -1) { currentMenu = 'active'; } %>
+					<%
+						let isExistChildMenus = false;
+						if(menu1.childMenus != null)  { 
+							menu1.childMenus.forEach((entry) => {
+								if(entry.options.show == true) { isExistChildMenus = true; }
+							});
+						}					
+					%>
+					<% if(isExistChildMenus)  { %> 
+						<li class="dropdown <%- currentMenu %>">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><%- menu1.name %>
+								<span class="caret"></span>
+							</a>
+								<ul class="dropdown-menu" role="menu">
+									<% menu1.childMenus.forEach(menu2 => { %>
+										<% if(!menu2.options.show || !menu2.options.use || menu2.request == null) { return; } %>
+										<li><a href="<%- menu2.request.url %>"><%- menu2.name %></a></li>
+									<% }); %>
+								</ul>
+						</li>
+					<% } else { %>
+						<li class="<%- currentMenu %>"><a href="<%- menu1.request.url %>"><%- menu1.name %></a></li>
+					<% } %>
+				<% }); %>
+			</ul>
+		  </div>
+		</div>
+	  </nav>
+  	</div>
+  </div>
+  <!-- NAVBAR  -->

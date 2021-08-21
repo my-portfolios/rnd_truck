@@ -1,0 +1,275 @@
+<div role="tabpanel">
+	<%- include (`${displayPath}/applications/API/views/api_info/api_info_header.ejs`, {data: 'prodcar', type: 'insert'}) %>
+	<div role="tabpanel" class="tab-pane" id="profile">
+
+		<div class="text-left">
+			<h4 class="title"><strong>2. 완성차 등록</strong></h4>
+			<p class="content_title"> API 요청</p>
+			<ul>
+				<li>&nbsp;&nbsp;[POST] http://camping-car.co.kr/openapi/data/prodcar/write</li>
+			</ul>
+			<br/>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_request_headers_info.ejs`) %>
+
+		<div class="text-left"><p class="content_title">Request Parameters</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+						<th>요청 변수</th>
+						<th>설명</th>
+						<th>타입</th>
+						<th>필수여부</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prodcarNm</td>
+						<td>완성차 이름</td>
+						<td>string</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodcarModelId</td>
+						<td>완성차 모델명</td>
+						<td>string</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodcarManuId</td>
+						<td>완성차 제조사</td>
+						<td>string</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodcarPrice</td>
+						<td>완성차 가격</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>userId</td>
+						<td>회원 아이디</td>
+						<td>string</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo</td>
+						<td>완성차 장착 정보</td>
+						<td>array</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarRefType</td>
+						<td>완성차 장착 정보에 대한 유형</td>
+						<td>string <span style="background: #eeeeee;font-size:8pt;">["BASECAR" | "EQUIP"]</span></td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarRefKey</td>
+						<td>완성차 장착 정보에 대한 키</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarObjectSetNm</td>
+						<td>완성차 장착 정보에 대한 오브젝트 세트명</td>
+						<td>string</td>
+						<td>N</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarMaterialSetNm</td>
+						<td>완성차 장착 정보에 대한 메테리얼 세트명</td>
+						<td>string</td>
+						<td>N</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarPosX</td>
+						<td>완성차 장착 정보에 대한 X 값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarPosY</td>
+						<td>완성차 장착 정보에 대한 Y 값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarPosZ</td>
+						<td>완성차 장착 정보에 대한 Z 값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarRotX</td>
+						<td>완성차 장착 정보에 대한 회전 X값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarRotY</td>
+						<td>완성차 장착 정보에 대한 회전 Y값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>prodCarInfo.prodcarRotZ</td>
+						<td>완성차 장착 정보에 대한 회전 Z값</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="text-left"><p class="content_title"> Response: Success</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+					<th>필드</th>
+					<th>설명</th>
+					<th>타입</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>DATA.RESULT</td>
+						<td>API 요청에 대한 결과</td>
+						<td>boolean</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCAR_KEY</td>
+						<td>완성차에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCAR_NM</td>
+						<td>완성차 이름</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCAR_MODEL_ID</td>
+						<td>완성차 모델명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCAR_MANU_ID</td>
+						<td>완성차 제조사</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCAR_PRICE</td>
+						<td>완성차 가격</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.CREATE_ID</td>
+						<td>최초등록자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.UPDATE_ID</td>
+						<td>최종수정자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.CREATE_DT</td>
+						<td>최초등록일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.UPDATE_DT</td>
+						<td>최종수정일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_INFO_KEY</td>
+						<td>완성차 장착 정보에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_KEY</td>
+						<td>완성차에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_REF_TYPE</td>
+						<td>완성차 장착 정보에 대한 유형</td>
+						<td>string <span style="background: #eeeeee;font-size:8pt;">["BASECAR" | "EQUIP"]</span></td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_REF_KEY</td>
+						<td>완성차 장착 정보에 대한 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_OBJECT_SET_NM</td>
+						<td>완성차 장착 정보에 대한 오브젝트 세트명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_MATERIAL_SET_NM</td>
+						<td>완성차 장착 정보에 대한 메테리얼 세트명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_POS_X</td>
+						<td>완성차 장착 정보에 대한 X 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_POS_Y</td>
+						<td>완성차 장착 정보에 대한 Y 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_POS_Z</td>
+						<td>완성차 장착 정보에 대한 Z 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_ROT_X</td>
+						<td>완성차 장착 정보에 대한 회전 X 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_ROT_Y</td>
+						<td>완성차 장착 정보에 대한 회전 Y 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.PRODCAR_ROT_Z</td>
+						<td>완성차 장착 정보에 대한 회전 Z 값</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.CREATE_ID</td>
+						<td>최초등록자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.UPDATE_ID</td>
+						<td>최종수정자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.CREATE_DT</td>
+						<td>최초등록일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PRODCARINFO.UPDATE_DT</td>
+						<td>최종수정일시</td>
+						<td>string</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_error_info.ejs`) %>
+	</div>
+</div>

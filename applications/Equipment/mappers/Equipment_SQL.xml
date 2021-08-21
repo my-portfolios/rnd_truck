@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Equipment">  
+
+	<select id="getEquipmentList">
+		SELECT
+			AA.EQUIP_KEY,
+			AA.CODE_KEY,
+			BB.CODE_NM EQUIP_TYPE,
+			AA.EQUIP_NM,
+			AA.EQUIP_MODEL_ID,
+			AA.EQUIP_MANU_ID,
+			AA.PROP_VAL1,
+			AA.PROP_VAL2,
+			AA.PROP_VAL3,
+			AA.PROP_VAL4,
+			AA.PROP_VAL5,
+			AA.PROP_VAL6,
+			AA.PROP_VAL7,
+			AA.PROP_VAL8,
+			AA.PROP_VAL9,
+			AA.PROP_VAL10,
+			AA.OBJECT3D_DEFAULT_SET,
+			AA.MATERIAL_DEFAULT_SET,
+			AA.CREATE_ID,
+			AA.UPDATE_ID,
+			AA.CREATE_DT,
+			AA.UPDATE_DT,
+			AA.EQUIP_OPENYN
+		FROM 
+			EQUIP AA,
+			CODE BB
+		WHERE 1=1
+			AND AA.CODE_KEY = BB.CODE_KEY
+			<if test="equipKey != null and equipKey != ''">
+				AND AA.EQUIP_KEY = #{equipKey}
+			</if>
+			<if test="equipKeyArray != null and equipKeyArray != ''">
+				AND AA.EQUIP_KEY IN (
+					<foreach collection="equipKeyArray" item="name" separator=", ">#{name}</foreach>
+				)
+			</if>	
+			<if test="codeKey != null and codeKey != ''">
+				AND AA.CODE_KEY = #{codeKey}
+			</if>
+			<if test="equipNm != null and equipNm != ''">
+				AND AA.EQUIP_NM = #{equipNm}
+			</if>
+			<if test="equipModelId != null and equipModelId != ''">
+				AND AA.EQUIP_MODEL_ID = #{equipModelId}
+			</if>
+			<if test="equipManuId != null and equipManuId != ''">
+				AND AA.EQUIP_MANU_ID = #{equipManuId}
+			</if>
+			<if test="createId != null and createId != ''">
+				AND AA.CREATE_ID = #{createId}
+			</if>
+			<if test="searchType != null and searchType != '' and searchValue != null and searchValue != ''">
+				<choose>
+					<when test="searchType == 'equipNm'">AND AA.EQUIP_NM LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'equipModelId'">AND AA.EQUIP_MODEL_ID LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'equipManuId'">AND AA.EQUIP_MANU_ID LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal1'">AND AA.PROP_VAL1 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal2'">AND AA.PROP_VAL2 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal3'">AND AA.PROP_VAL3 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal4'">AND AA.PROP_VAL4 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal5'">AND AA.PROP_VAL5 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal6'">AND AA.PROP_VAL6 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal7'">AND AA.PROP_VAL7 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal8'">AND AA.PROP_VAL8 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal9'">AND AA.PROP_VAL9 LIKE '%' #{searchValue} '%'</when>
+					<when test="searchType == 'propVal10'">AND AA.PROP_VAL10 LIKE '%' #{searchValue} '%'</when>
+				</choose>
+			</if>
+		ORDER BY EQUIP_KEY DESC
+	</select>
+
+   <insert id="insertEquipmentInfo">
+		INSERT INTO EQUIP (
+			CODE_KEY, 
+			EQUIP_NM,
+			EQUIP_MODEL_ID,
+			EQUIP_MANU_ID,
+			PROP_VAL1,
+			PROP_VAL2,
+			PROP_VAL3,
+			PROP_VAL4,
+			PROP_VAL5,
+			PROP_VAL6,
+			PROP_VAL7,
+			PROP_VAL8,
+			PROP_VAL9,
+			PROP_VAL10,
+			OBJECT3D_DEFAULT_SET,
+			MATERIAL_DEFAULT_SET,
+			CREATE_ID,
+			UPDATE_ID
+		) VALUES (
+			#{equipType},
+			#{equipNm},
+			#{equipModelId},
+			#{equipManuId},
+			#{propVal1},
+			#{propVal2},
+			#{propVal3},
+			#{propVal4},
+			#{propVal5},
+			#{propVal6},
+			#{propVal7},
+			#{propVal8},
+			#{propVal9},
+			#{propVal10},
+			#{object3dDefaultSet},
+			#{materialDefaultSet},
+			#{createId},
+			#{updateId}
+		)
+   </insert>
+   
+   <update id="updateEquipmentInfo">
+		UPDATE 
+			EQUIP 
+		SET
+			<if test="equipNm != null and equipNm != ''">
+				EQUIP_NM = #{equipNm},
+			</if>
+			<if test="equipModelId != null and equipModelId != ''">
+				EQUIP_MODEL_ID = #{equipModelId},
+			</if>
+			<if test="equipManuId != null and equipManuId != ''">
+				EQUIP_MANU_ID = #{equipManuId},
+			</if>
+			<if test="propVal1 != null and propVal1 != ''">
+				PROP_VAL1 = #{propVal1},
+			</if>
+			<if test="propVal2 != null and propVal2 != ''">
+				PROP_VAL2 = #{propVal2},
+			</if>
+			<if test="propVal3 != null and propVal3 != ''">
+				PROP_VAL3 = #{propVal3},
+			</if>
+			<if test="propVal4 != null and propVal4 != ''">
+				PROP_VAL4 = #{propVal4},
+			</if>
+			<if test="propVal5 != null and propVal5 != ''">
+				PROP_VAL5 = #{propVal5},
+			</if>
+			<if test="propVal6 != null and propVal6 != ''">
+				PROP_VAL6 = #{propVal6},
+			</if>
+			<if test="propVal7 != null and propVal7 != ''">
+				PROP_VAL7 = #{propVal7},
+			</if>
+			<if test="propVal8 != null and propVal8 != ''">
+				PROP_VAL8 = #{propVal8},
+			</if>
+			<if test="propVal9 != null and propVal9 != ''">
+				PROP_VAL9 = #{propVal9},
+			</if>
+			<if test="propVal10 != null and propVal10 != ''">
+				PROP_VAL10 = #{propVal10},
+			</if>
+			<if test="object3dDefaultSet != null and object3dDefaultSet != ''">
+				OBJECT3D_DEFAULT_SET = #{object3dDefaultSet},
+			</if>
+			<if test="materialDefaultSet != null and materialDefaultSet != ''">
+				MATERIAL_DEFAULT_SET = #{materialDefaultSet},
+			</if>
+			<if test="equipOpenyn != null and equipOpenyn != ''">
+				EQUIP_OPENYN = #{equipOpenyn},
+			</if>
+			UPDATE_ID = #{updateId}
+		WHERE 1=1
+			AND EQUIP_KEY = #{equipKey}
+   </update>
+
+   <update id="updateEquipmentColumnToEmpty">
+		UPDATE 
+			EQUIP
+		SET
+			${columnName} = ''
+		WHERE 1=1
+			AND CODE_KEY = #{codeKey}
+   </update>
+
+   <delete id="deleteEquipment">
+		DELETE FROM EQUIP
+		WHERE 1=1
+			<if test="equipKey != null and equipKey != ''">
+				AND EQUIP_KEY = #{equipKey}
+			</if>
+			<if test="codeKey != null and codeKey != ''">
+				AND CODE_KEY = #{codeKey}
+			</if>
+   </delete>
+</mapper>

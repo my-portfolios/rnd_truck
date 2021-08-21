@@ -1,0 +1,81 @@
+<div role="tabpanel">
+	<%- include (`${displayPath}/applications/API/views/api_info/api_info_header.ejs`, {data: 'user', type: 'select'}) %>
+
+	<div role="tabpanel" class="tab-pane" id="profile">
+		<div class="text-left">
+			<h4 class="title"><strong>1. 캠핑카 포털 로그인</strong></h4>
+			<p class="content_title"> API 요청</p>
+			<ul>
+				<li>&nbsp;&nbsp;[POST] http://camping-car.co.kr/openapi/data/auth/login</li>
+			</ul>
+			<br/>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_request_headers_info.ejs`) %>
+
+		<div class="text-left"><p class="content_title">Request Parameters</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+				  <tr>
+					<th>요청 변수</th>
+					<th>설명</th>
+					<th>타입</th>
+					<th>필수여부</th>
+				  </tr>
+				</thead>
+				<tbody>
+				  <tr>
+					<td>id</td>
+					<td>사용자 아이디</td>
+					<td>string</td>
+					<td>Y</td>
+				  </tr>
+				  <tr>
+					<td>password</td>
+					<td>사용자 비밀번호</td>
+					<td>string</td>
+					<td>Y</td>
+				  </tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="text-left"><p class="content_title"> Response: Success</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+						<th>필드</th>
+						<th>설명</th>
+						<th>타입</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>DATA.RESULT</td>
+						<td>API 요청에 대한 결과</td>
+						<td>boolean</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.USER_KEY</td>
+						<td>회원에 대한 고유 키</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.USER_ID</td>
+						<td>회원 아이디</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.USER_TYPE</td>
+						<td>회원 유형</td>
+						<td>string</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_error_info.ejs`) %>
+	</div>
+</div>

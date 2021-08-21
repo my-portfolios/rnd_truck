@@ -1,0 +1,67 @@
+<div role="tabpanel">
+	<%- include (`${displayPath}/applications/API/views/api_info/api_info_header.ejs`, {data: 'prodcar', type: 'delete'}) %>
+	<div role="tabpanel" class="tab-pane" id="profile">
+		
+
+		<div class="text-left">
+			<h4 class="title"><strong>4. 완성차 삭제</strong></h4>
+			<p class="content_title"> API 요청</p>
+			<ul>
+				<li>&nbsp;&nbsp;[DELETE] http://camping-car.co.kr/openapi/data/prodcar/delete</li>
+			</ul>
+			<br/>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_request_headers_info.ejs`) %>
+
+		<div class="text-left"><p class="content_title">Request Parameters</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+						<th>요청 변수</th>
+						<th>설명</th>
+						<th>타입</th>
+						<th>필수여부</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>prodcarKey</td>
+						<td>완성차에 대한 고유 키</td>
+						<td>number</td>
+						<td>Y</td>
+					</tr>
+					<tr>
+						<td>userId</td>
+						<td>회원 아이디</td>
+						<td>string</td>
+						<td>Y</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="text-left"><p class="content_title"> Response: Success</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+					<th>필드</th>
+					<th>설명</th>
+					<th>타입</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>DATA.RESULT</td>
+						<td>API 요청에 대한 결과</td>
+						<td>boolean</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_error_info.ejs`) %>
+	</div>
+</div>

@@ -1,0 +1,60 @@
+<script>
+    $(function(){
+        $("#joinForm").validate({
+            submitHandler: function() {
+                if(confirm("회원가입을 완료하겠습니까?")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            rules: {
+                id: {
+                    required : true,
+                    minlength : 5,
+                    maxlength : 20,
+                    remote: "/auth/checkExistIdRegistered"
+                },
+                password1: {
+                    required : true,
+                    minlength : 3
+                },
+                password2: {
+                    required : true,
+                    minlength : 3,
+                    equalTo : password1
+                }
+            },
+            messages : {
+                id: {
+                    required : "아이디를 입력하세요",
+                    minlength : "아이디는 최소 {0}글자 이상이어야 합니다",
+                    remote : "존재하는 아이디입니다"
+                },
+                password1: {
+                    required : "비밀번호를 입력하세요",
+                    minlength : "최소 {0}글자이상이어야 합니다"
+                },
+                password2: {
+                    required : "비밀번호 확인을 입력하세요",
+                    minlength : "최소 {0}글자이상이어야 합니다",
+                    equalTo : "비밀번호가 서로 일치하지 않습니다."
+                }
+            }
+        });
+    });
+</script>
+
+<form id="joinForm" action="/auth/joinAction" method="post">
+    <input type="hidden" name="userType" value="U" />
+    <input type="text" name="userId" placeholder="아이디"/><br/>
+    <input type="password" id="password1" name="password" placeholder="비밀번호"/>
+    <input type="password" id="password2" placeholder="비밀번호 확인"/><br/>
+    <input type="text" name="userNm" placeholder="이름"/><br/>
+    <input type="text" name="userNick" placeholder="별명"/><br/>
+    <input type="text" name="userTelNumber" placeholder="전화번호"/><br/>
+    <input type="text" name="userMail" placeholder="메일"/><br/>
+    <input type="text" name="userAdres" placeholder="주소"/><br/>
+    <input type="text" name="userDetailAdres" placeholder="상세 주소"/><br/>
+    <input type="submit" value="가입"/>
+</form>

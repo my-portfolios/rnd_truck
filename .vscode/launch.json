@@ -1,0 +1,14 @@
+{
+    "configurations": [
+    {
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/main.js",
+        "request": "launch",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "outputCapture": "std",
+        "type": "pwa-node"
+    }
+    ]
+}

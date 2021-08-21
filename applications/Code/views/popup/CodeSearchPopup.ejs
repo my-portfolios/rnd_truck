@@ -1,0 +1,115 @@
+<script>
+    var dgMain;
+    $(function() {
+        dgMain = new tui.Grid({
+            el: $('#dgMain')[0],
+		    scrollX: true,
+		    scrollY: true,
+			bodyHeight: 300,
+			pageOptions: {
+				useClient: true,
+				perPage: 10
+			},
+		    rowHeaders: ['checkbox', 'rowNum'],
+		    columns: [
+			    {
+			    	header: '코드 아이디',
+			    	name: 'codeId',
+                    align: 'center',
+                    width: 280,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '코드명',
+			    	name: 'codeNm',
+                    align: 'center',
+                    width: 250,
+			    	resizable: true,
+			    	sortable: true
+			    },
+			    {
+			    	header: '정렬 순서',
+			    	name: 'sortOrder',
+			    	align: 'center',
+			    	width: 120,
+			    	resizable: true,
+			    	sortable: true
+				},
+                {
+			    	header: '비고',
+			    	name: 'remark',
+			    	align: 'center',
+			    	width: 390,
+			    	resizable: true,
+			    	sortable: true
+			    }
+			]
+		});
+	});
+	
+	var selectMinCnt = 0;
+	var selectMaxCnt = 0;
+	var parentInputElementName = '';
+	var parentViewElementId = '';
+	
+	function creationComplete(formId, elName, params) {
+		var category = params.category;
+
+		if(elName == null) { alert('데이터 선택 설정에 문제 있습니다. 관리자에게 문의하세요.'); parent.codeSearchPopup.dialog("close"); return; }
+		/* if(min == 0 && max == 0) { alert('데이터를 선택할 수 없습니다. 관리자에게 문의하세요.'); parent.codeSearchPopup.dialog("close"); return; } */
+		if(elName == '') { alert('데이터 입력 대상이 지정되지 않았습니다. 관리자에게 문의하세요.'); parent.codeSearchPopup.dialog("close"); return; }
+		if(category == null || category == '') { alert('코드 분류가 지정되지 않았습니다. 관리자에게 문의하세요.'); parent.codeSearchPopup.dialog("close"); return; }
+
+		/* selectMinCnt = min;
+		selectMaxCnt = max; */
+		parentFormId = formId;
+		parentInputElementName = elName;
+		parentViewElementId = elName + "View";
+
+		$.get('/code/data/list/'+category, params, function(data) {
+			dgMain.resetData(data);
+		}).fail(function(err) {
+			alert('코드 정보를 가져오는데 실패하였습니다.');
+			parent.codeSearchPopup.dialog("close"); 
+			return; 
+		});
+	}
+
+    function selectAction() {
+		var checkedList = dgMain.getCheckedRows();
+		var parentInputEl = $("[name='" + parentInputElementName + "']", parent.document);
+		var parentViewEl = $("#" + parentViewElementId, parent.document);
+		var parentFormEl = $("#" + parentFormId, parent.document);
+		var propName = $(parentInputEl).attr('hbz-propName');
+		var dataType = $(parentInputEl).attr('hbz-dataType');
+		var dataRequired = $(parentInputEl).attr('hbz-dataRequired');
+		var dataRefObj = $(parentInputEl).attr('hbz-dataRefObj');
+		var dataRefVal = $(parentInputEl).attr('hbz-dataRefVal');
+		
+		if(checkedList.length == 0) { alert('선택하지 않으셨습니다.'); return; }
+		/* if(checkedList.length < selectMinCnt) { alert(selectMinCnt + '개 이상 선택하세요.'); return; }
+		if(checkedList.length > selectMaxCnt) { alert(selectMaxCnt + '개 까지 선택 가능합니다.'); return; } */
+
+		var array = new Array();
+		$(parentViewEl).empty();
+		$(parentInputEl).remove();
+		checkedList.forEach(function(iv) {
+			var option = $("<option>", {text: iv.codeNm, value: iv.codeNm});
+			var input  = $("<input>", {type: 'hidden', name: parentInputElementName, value: iv.codeKey, 
+			'hbz-propName': propName, 'hbz-dataType': dataType, 'hbz-dataRequired': dataRequired, 'hbz-dataRefObj': dataRefObj, 'hbz-dataRefVal': dataRefVal});
+			
+			$(parentViewEl).append(option);
+			$(parentFormEl).append(input);
+		});
+		
+		parent.codeSearchPopup.dialog("close"); 
+	}
+</script>
+
+<div id="dgMain"></div>
+
+<div class="text-center" style="margin-top: 20px;">
+	<input type="button" onclick="selectAction();" value="선택" />
+</div>
+

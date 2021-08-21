@@ -1,0 +1,308 @@
+<div role="tabpanel">
+	<%- include (`${displayPath}/applications/API/views/api_info/api_info_header.ejs`, {data: 'equipment', type: 'select'}) %>
+
+	<div role="tabpanel" class="tab-pane" id="profile">
+		<div class="text-left">
+			<h4 class="title"><strong>1. 장치 현황 조회</strong></h4>
+			<p class="content_title"> API 요청</p>
+			<ul>
+				<li>&nbsp;&nbsp;[GET] http://camping-car.co.kr/openapi/data/equipment/list</li>
+			</ul>
+			<br/>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_request_headers_info.ejs`) %>
+
+		<div class="text-left"><p class="content_title">Request Parameters</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+					  <th>요청 변수</th>
+					  <th>설명</th>
+					  <th>타입</th>
+					  <th>필수여부</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <td>equipKey</td>
+					  <td>장치에 대한 고유키</td>
+					  <td>number</td>
+					  <td>N</td>
+					</tr>
+					<tr>
+					  <td>codeKey</td>
+					  <td>장치 분류에 대한 키</td>
+					  <td>string</td>
+					  <td>N</td>
+					</tr>
+					<tr>
+					  <td>equipModelId</td>
+					  <td>장치에 대한 모델명</td>
+					  <td>string</td>
+					  <td>N</td>
+					</tr>
+					<tr>
+						<td>createId</td>
+						<td>최초등록자</td>
+						<td>string</td>
+						<td>N</td>
+					</tr>
+				  </tbody>
+			</table>
+		</div>
+		
+		<div class="text-left"><p class="content_title"> Response: Success</p></div>
+		<div class="board_list">
+			<table class="table text-center">
+				<thead>
+					<tr>
+						<th>필드</th>
+						<th>설명</th>
+						<th>타입</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>DATA.RESULT</td>
+						<td>API 요청에 대한 결과</td>
+						<td>boolean</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_KEY</td>
+						<td>장치에 대한 고유키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.CODE_KEY</td>
+						<td>장치 분류에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_TYPE</td>
+						<td>장치 분류명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_NM</td>
+						<td>장치 이름</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_MODEL_ID</td>
+						<td>장치 모델명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_MANU_ID</td>
+						<td>장치 제조사</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.EQUIP_OPENYN</td>
+						<td>게시글 공개여부</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL1</td>
+						<td>장치에 대한 1번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL2</td>
+						<td>장치에 대한 2번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL3</td>
+						<td>장치에 대한 3번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL4</td>
+						<td>장치에 대한 4번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL5</td>
+						<td>장치에 대한 5번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL6</td>
+						<td>장치에 대한 6번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL7</td>
+						<td>장치에 대한 7번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL8</td>
+						<td>장치에 대한 8번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL9</td>
+						<td>장치에 대한 9번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_VAL10</td>
+						<td>장치에 대한 10번 값</td>
+						<td>array/string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.OBJECT3D_DEFAULT_SET</td>
+						<td>3D오브젝트 기본 세트 명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.MATERIAL_DEFAULT_SET</td>
+						<td>메테리얼 기본 세트 명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.CREATE_ID</td>
+						<td>최초등록자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.UPDATE_ID</td>
+						<td>최종수정자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.CREATE_DT</td>
+						<td>최초등록일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.UPDATE_DT</td>
+						<td>최종수정일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.PROP_INFO_KEY</td>
+						<td>장치 속성에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.CODE_KEY</td>
+						<td>장치 분류에 대한 고유 키</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.PROP_ORDER</td>
+						<td>장치 분류 순서</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.PROP_NAME</td>
+						<td>장치 분류 명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_TYPE</td>
+						<td>장치 분류 유형</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_MIN_LENGTH</td>
+						<td>장치 값에 대한 최소 길이</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_MAX_LENGTH</td>
+						<td>장치 값에 대한 최대 길이</td>
+						<td>number</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_REQUIRED</td>
+						<td>장치 값에 대한 필수 여부</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_REGEX</td>
+						<td>장치 값에 대한 정규식 BASE64</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_REGEX_TAG</td>
+						<td>장치 값에 대한 정규식 태그</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_REF_OBJ</td>
+						<td>장치 값에 대한 참조 대상</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_REF_VAL</td>
+						<td>장치 값에 대한 참조 값</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.DATA_INFO_MESSAGE</td>
+						<td>장치 값에 대한 규칙 설명 메시지</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.USE_YN</td>
+						<td>장치 속성에 대한 사용 여부</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.CREATE_ID</td>
+						<td>최초등록자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.UPDATE_ID</td>
+						<td>최종수정자</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.CREATE_DT</td>
+						<td>최초등록일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.PROP_INFO.UPDATE_DT</td>
+						<td>최종수정일시</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.FILE.ORIGINNAME</td>
+						<td>장치와 관련된 파일명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.FILE.NAME</td>
+						<td>장치와 관련된 파일 세트명</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.FILE.TYPE</td>
+						<td>장치와 관련된 파일 세트 타입</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.FILE.LINK</td>
+						<td>장치와 관련된 파일 세트 다운로드 링크</td>
+						<td>string</td>
+					</tr>
+					<tr>
+						<td>DATA.DATA.FILE.DATE</td>
+						<td>장치와 관련된 파일 수정일</td>
+						<td>date</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<%- include (`${displayPath}/applications/API/views/api_info/api_error_info.ejs`) %>
+	</div>
+</div>

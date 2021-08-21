@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Auth">  
+
+  <update id="updateLastAccessDt">
+    UPDATE USER
+    SET
+      LAST_ACCESS_DT = now()
+    WHERE
+      USER_KEY = #{USER_KEY}
+  </update>
+
+  <select id="selectAuthUser">
+    SELECT
+      USER_KEY
+      , USER_ID
+      , USER_TYPE
+      , USE_YN
+    FROM
+      USER
+    WHERE 1=1
+      AND USER_ID = #{userId}
+      AND USER_PASSWORD = PASSWORD(#{userPassword})
+  </select>
+
+  <select id="selectUserWhetherRegisered">
+    SELECT
+      COUNT(*) cnt
+    FROM 
+      USER
+    WHERE 1=1
+      AND USER_ID = #{userId}
+  </select>
+
+  <insert id="insertAuthUser">
+    INSERT INTO USER (
+        USER_ID, 
+        USER_PASSWORD, 
+        USER_TYPE, 
+        USE_YN, 
+        CREATE_ID
+    ) VALUES (
+      #{userId}, 
+      PASSWORD(#{userPassword}), 
+      #{userType}, 
+      #{useYn}, 
+      #{createId}
+    )
+  </insert>
+
+  <insert id="insertUserInfo">
+    INSERT INTO USER_INFO (
+        USER_KEY,
+        USER_NM,
+        USER_NICK,
+        USER_TEL_NUMBER,
+        USER_MAIL,
+        USER_ADRES,
+        USER_DETAIL_ADRES
+    ) VALUES (
+      #{userKey}, 
+      #{userNm}, 
+      #{userNick},
+      #{userTelNumber},
+      #{userMail},
+      #{userAdres},
+      #{userDetailAdres}
+    )
+  </insert>
+
+  <insert id="insertEnterpriseInfo">
+    INSERT INTO ENTPR_INFO (
+        USER_KEY,
+        ENTPR_NM,
+        ENTPR_NUM,
+        BRAND_NM,
+        ENTPR_OWNER_NM,
+        ENTPR_TEL_NUMBER,
+        MANAGER_NM,
+        MANAGER_TEL_NUMBER,
+        MANAGER_EMAIL,
+        ENTPR_ADRES,
+        ENTPR_DETAIL_ADRES
+    ) VALUES (
+      #{userKey}, 
+      #{entprNm}, 
+      #{entprNum},
+      #{brandNm},
+      #{entprOwnerNm},
+      #{entprTelNumber},
+      #{managerNm},
+      #{managerTelNumber},
+      #{managerEmail},
+      #{entprAdres},
+      #{entprDetailAdres}
+    )
+  </insert>
+</mapper>

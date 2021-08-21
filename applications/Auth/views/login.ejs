@@ -1,0 +1,83 @@
+
+<script>
+
+  function setCookie(cookieName, value, exdays){
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + exdays);
+      var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+      document.cookie = cookieName + "=" + cookieValue;
+  }
+  
+  function deleteCookie(cookieName){
+      var expireDate = new Date();
+      expireDate.setDate(expireDate.getDate() - 1);
+      document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+  }
+  
+  function getCookie(cookieName) {
+      cookieName = cookieName + '=';
+      var cookieData = document.cookie;
+      var start = cookieData.indexOf(cookieName);
+      var cookieValue = '';
+      if(start != -1){
+          start += cookieName.length;
+          var end = cookieData.indexOf(';', start);
+          if(end == -1)end = cookieData.length;
+          cookieValue = cookieData.substring(start, end);
+      }
+      return unescape(cookieValue);
+  }
+
+  $(function() {
+
+    var userInputId = getCookie("userInputId");//저장된 쿠기값 가져오기
+    $("input[name='id']").val(userInputId); 
+     
+    if($("input[name='id']").val() != ""){ // 그 전에 ID를 저장해서 처음 페이지 로딩
+                                           // 아이디 저장하기 체크되어있을 시,
+        $("#idSaveCheck").attr("checked", true); // ID 저장하기를 체크 상태로 두기.
+    }
+     
+    $("#idSaveCheck").change(function(){ // 체크박스에 변화가 발생시
+        if($("#idSaveCheck").is(":checked")){ // ID 저장하기 체크했을 때,
+            var userInputId = $("input[name='id']").val();
+            setCookie("userInputId", userInputId, 7); // 7일 동안 쿠키 보관
+        }else{ // ID 저장하기 체크 해제 시,
+            deleteCookie("userInputId");
+        }
+    });
+     
+    // ID 저장하기를 체크한 상태에서 ID를 입력하는 경우, 이럴 때도 쿠키 저장.
+    $("input[name='id']").keyup(function(){ // ID 입력 칸에 ID를 입력할 때,
+        if($("#idSaveCheck").is(":checked")){ // ID 저장하기를 체크한 상태라면,
+            var userInputId = $("input[name='id']").val();
+            setCookie("userInputId", userInputId, 7); // 7일 동안 쿠키 보관
+        }
+    });
+
+    $('[type=text], [type=password]').on('keypress', function (event) {
+      if(event.keyCode != '13') { return; }
+      $('#btn_login').trigger('click');
+    });
+
+    $('#btn_login').click(function () {
+      $('#frm').submit();
+    });
+  });
+</script>
+
+<form id="frm" class="form-signin" action="/auth/loginAction" method="post">
+    <!-- <h2 class="form-signin-heading">LOGIN</h2> -->
+    <h5>가입하신 아이디와 비밀번호를 입력해주세요.</h5>
+    <label for="id" class="sr-only">Id</label>
+    <input type="text" name="id" class="form-control" placeholder="아이디" required autofocus /> 
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" id="password1" name="password" class="form-control" placeholder="비밀번호" required>
+    <div class="checkbox">
+      <label>
+        <input id="idSaveCheck" type="checkbox" value="remember-me"> 아이디 저장
+      </label>
+    </div>
+    <button type="button" id="btn_login" class="btn btn-lg btn-primary btn-block">로그인 </button>
+    <!-- <h5><a href="#">아이디 찾기</a> | <a href="#">비밀번호 찾기</a> | <a href="/auth/join">회원가입</a></h5> -->
+</form>

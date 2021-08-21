@@ -1,0 +1,17 @@
+{
+    "server": {
+        "contextPath": "/",
+        "port": 8000
+    },
+    "link": {
+        "index": "/home",
+        "favicon": "/assets/favicon.ico"
+    },
+    "page": {
+        "error": {
+            "notFound": "resources/views/error/notFound.ejs",
+            "exception": "resources/views/error/exception.ejs"
+        },
+        "alert": "resources/views/throwPage.ejs"
+    }
+}

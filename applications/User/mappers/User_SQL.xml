@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="User">  
+
+  <delete id="releaseEntpr">
+    DELETE T1, T2 FROM USER T1 LEFT JOIN ENTPR_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    WHERE 
+      T1.USER_KEY = #{userKey} 
+  </delete>
+
+  <delete id="releaseUser">
+    DELETE T1, T2 FROM USER T1 LEFT JOIN USER_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    WHERE 
+      T1.USER_KEY = #{userKey} 
+  </delete>
+
+  <update id="updateEntprInfo">
+    UPDATE USER T1 LEFT JOIN ENTPR_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    SET 
+      <if test="password != ''">
+        T1.USER_PASSWORD = password(#{password}),         
+      </if>
+      T2.ENTPR_NM = #{entprNm}, 
+      T2.ENTPR_NUM = #{entprNum}, 
+      T2.BRAND_NM = #{brandNm}, 
+      T2.ENTPR_OWNER_NM = #{entprOwnerNm}, 
+      T2.ENTPR_TEL_NUMBER = #{entprTelNumber}, 
+      T2.MANAGER_NM = #{managerNm}, 
+      T2.MANAGER_TEL_NUMBER = #{managerTelNumber}, 
+      T2.MANAGER_EMAIL = #{managerEmail}, 
+      T2.ENTPR_ADRES = #{entprAdres}, 
+      T2.ENTPR_DETAIL_ADRES = #{entprDetailAdres}
+    WHERE
+      T1.USER_KEY = #{userKey} 
+  </update>
+
+  <update id="updateUserInfo">
+    UPDATE USER T1 LEFT JOIN USER_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    SET 
+      <if test="password != ''">
+        T1.USER_PASSWORD = password(#{password}),         
+      </if>
+      T2.USER_NM = #{userNm}, 
+      T2.USER_NICK = #{userNick}, 
+      T2.USER_TEL_NUMBER = #{userTelNumber}, 
+      T2.USER_MAIL = #{userMail}, 
+      T2.USER_ADRES = #{userAdres}, 
+      T2.USER_DETAIL_ADRES = #{userDetailAdres}
+    WHERE
+      T1.USER_KEY = #{userKey} 
+  </update>
+
+  <select id="selectEntprInfo">
+    WITH ENTPR AS ( 
+      SELECT 
+        * 
+      FROM 
+        USER 
+      WHERE 
+        USER_TYPE = 'C' 
+    ) 
+    SELECT 
+      T1.USER_KEY, 
+      T1.USER_ID,  
+      T2.ENTPR_NM, 
+      T2.ENTPR_NUM, 
+      T2.BRAND_NM, 
+      T2.ENTPR_OWNER_NM, 
+      T2.ENTPR_TEL_NUMBER, 
+      T2.MANAGER_NM, 
+      T2.MANAGER_TEL_NUMBER, 
+      T2.MANAGER_EMAIL, 
+      T2.ENTPR_ADRES, 
+      T2.ENTPR_DETAIL_ADRES 
+    FROM 
+      ENTPR T1 
+      LEFT JOIN 
+      ENTPR_INFO T2 
+      ON T1.USER_KEY = T2.USER_KEY 
+    WHERE 
+      T1.USER_KEY = #{USER_KEY}
+  </select>
+
+  <select id="selectUserInfo">
+    SELECT 
+      T1.USER_KEY, 
+      T1.USER_ID, 
+      T2.USER_NM, 
+      T2.USER_NICK, 
+      T2.USER_TEL_NUMBER, 
+      T2.USER_MAIL, 
+      T2.USER_ADRES, 
+      T2.USER_DETAIL_ADRES
+    FROM 
+      USER T1 
+      LEFT JOIN 
+      USER_INFO T2 
+      ON T1.USER_KEY = T2.USER_KEY 
+    WHERE
+      T1.USER_KEY = #{USER_KEY}
+  </select>
+
+  <select id="selectEntprList">
+    WITH USER AS ( 
+      SELECT 
+        * 
+      FROM 
+        USER 
+      WHERE 
+        USER_TYPE = 'C'
+    )
+    SELECT 
+      T1.USER_KEY, 
+      USER_ID, 
+      USER_TYPE, 
+      USE_YN, 
+      ENTPR_NM, 
+      ENTPR_NUM, 
+      BRAND_NM, 
+      ENTPR_OWNER_NM, 
+      ENTPR_TEL_NUMBER, 
+      MANAGER_NM, 
+      MANAGER_TEL_NUMBER, 
+      MANAGER_EMAIL, 
+      DATE_FORMAT(T1.CREATE_DT, '%Y-%m-%d') AS CREATE_DT, 
+      DATE_FORMaT(T1.UPDATE_DT, '%Y-%m-%d') AS UPDATE_DT 
+    FROM 
+      USER T1 
+      LEFT JOIN 
+      ENTPR_INFO T2 
+      ON T1.USER_KEY = T2.USER_KEY     
+    <where>
+      <if test="searchType == 'N'">
+        AND T2.ENTPR_NM LIKE CONCAT('%', #{searchText}, '%')
+      </if>
+      <if test="searchType == 'T'">
+        AND T2.ENTPR_TEL_NUMBER LIKE CONCAT('%', #{searchText}, '%')
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteUser">
+    DELETE T1, T2 FROM USER T1 LEFT JOIN USER_INFO T2 
+      ON T1.USER_KEY = T2.USER_KEY
+    WHERE
+      T1.USER_KEY = #{USER_KEY}
+  </delete>
+
+  <select id="selectUserList">
+    SELECT 
+      T1.USER_KEY, 
+      USER_TYPE, 
+      USE_YN, 
+      USER_ID, 
+      USER_NM, 
+      USER_NICK, 
+      USER_TEL_NUMBER, 
+      USER_MAIL, 
+      DATE_FORMAT(T1.CREATE_DT, '%Y-%m-%d') AS CREATE_DT, 
+      DATE_FORMaT(T1.UPDATE_DT, '%Y-%m-%d') AS UPDATE_DT
+    FROM 
+      USER T1
+      LEFT JOIN 
+      USER_INFO T2
+      ON T1.USER_KEY = T2.USER_KEY 
+    <where>
+      <if test="searchType == 'N'">
+        AND T2.USER_NM LIKE CONCAT('%', #{searchText}, '%')
+      </if>
+      <if test="searchType == 'T'">
+        AND T2.USER_TEL_NUMBER LIKE CONCAT('%', #{searchText}, '%')
+      </if>
+    </where>
+  </select>
+
+  <update id="updateUser">
+    UPDATE USER T1 LEFT JOIN USER_INFO T2
+    ON T1.USER_KEY = T2.USER_KEY
+    SET
+      T1.USER_TYPE = #{USER_TYPE},
+      T1.USE_YN = #{USE_YN},
+      T1.UPDATE_ID = #{updateId},
+      T2.USER_NM = #{USER_NM},
+      T2.USER_NICK = #{USER_NICK}
+    WHERE
+      T1.USER_KEY = #{USER_KEY}
+  </update>
+
+  <select id="selectUserCnt">
+    SELECT COUNT(1) AS ENTPR_CNT FROM USER WHERE USE_YN = 'N' AND USER_TYPE = 'C'
+  </select>
+
+  <delete id="deleteEntpr">
+    DELETE T1, T2 FROM USER T1 LEFT JOIN ENTPR_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    WHERE
+      T1.USER_KEY = #{USER_KEY}
+  </delete>
+
+  <select id="updateEntpr">
+    UPDATE USER T1 LEFT JOIN ENTPR_INFO T2 
+    ON T1.USER_KEY = T2.USER_KEY 
+    SET 
+      T1.UPDATE_ID = #{updateId}, 
+      T1.USE_YN = #{USE_YN}, 
+      T2.ENTPR_NM = #{ENTPR_NM}, 
+      T2.ENTPR_NUM = #{ENTPR_NUM}, 
+      T2.BRAND_NM = #{BRAND_NM}, 
+      T2.ENTPR_OWNER_NM = #{ENTPR_OWNER_NM}, 
+      T2.ENTPR_TEL_NUMBER = #{ENTPR_TEL_NUMBER}, 
+      T2.MANAGER_NM = #{MANAGER_NM}, 
+      T2.MANAGER_TEL_NUMBER = #{MANAGER_TEL_NUMBER}, 
+      T2.MANAGER_EMAIL = #{MANAGER_EMAIL}
+    WHERE
+      T1.USER_KEY = #{USER_KEY}
+  </select>
+</mapper>
